@@ -35,7 +35,7 @@ Parsed data utils class, use this class to convert `BeaconXInfo.ValidData` to UI
 
 ### 2.Connection stage
 
-**`com.moko.support.d.DMokoSupport`**
+**`com.moko.support.d.AOAMokoSupport`**
 
 BLE operation core class, extends from `Mokoblelib`.It can connect the device, disconnect the device, send the device connection status, turn on Bluetooth, turn off Bluetooth, judge whether Bluetooth is on or not, receive data from the device and send data to the device, notify the page data update, turn on and off characteristic notification.
 

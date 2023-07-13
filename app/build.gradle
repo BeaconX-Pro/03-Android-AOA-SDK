@@ -9,7 +9,7 @@ android {
 
     defaultConfig {
         if (!isLibrary.toBoolean()) {
-            applicationId "com.moko.bxp.aoa.c"
+            applicationId "com.moko.bxp.a.c"
         }
         minSdkVersion 18
         targetSdkVersion 31
@@ -17,7 +17,7 @@ android {
         versionName "1.0.0"
 
         def formatDate = new Date().format("yyyyMMddHHmm")
-        setProperty("archivesBaseName", "BXP_AOA_C_${versionName}_${formatDate}")
+        setProperty("archivesBaseName", "BXP_A_C_${versionName}_${formatDate}")
     }
 
     buildTypes {

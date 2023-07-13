@@ -6,6 +6,8 @@ import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattService;
 import android.content.Context;
 
+import androidx.annotation.NonNull;
+
 import com.elvishew.xlog.XLog;
 import com.moko.ble.lib.MokoBleManager;
 import com.moko.ble.lib.callback.MokoResponseCallback;
@@ -15,16 +17,11 @@ import com.moko.support.d.entity.OrderServices;
 
 import java.util.UUID;
 
-import androidx.annotation.NonNull;
-
 final class MokoBleConfig extends MokoBleManager {
 
     private MokoResponseCallback mMokoResponseCallback;
     private BluetoothGattCharacteristic paramsCharacteristic;
     private BluetoothGattCharacteristic disconnectCharacteristic;
-    private BluetoothGattCharacteristic singleTriggerCharacteristic;
-    private BluetoothGattCharacteristic doubleTriggerCharacteristic;
-    private BluetoothGattCharacteristic longTriggerCharacteristic;
     private BluetoothGattCharacteristic accCharacteristic;
     private BluetoothGattCharacteristic passwordCharacteristic;
 
@@ -39,9 +36,6 @@ final class MokoBleConfig extends MokoBleManager {
         if (service != null) {
             paramsCharacteristic = service.getCharacteristic(OrderCHAR.CHAR_PARAMS.getUuid());
             disconnectCharacteristic = service.getCharacteristic(OrderCHAR.CHAR_DISCONNECT.getUuid());
-            singleTriggerCharacteristic = service.getCharacteristic(OrderCHAR.CHAR_SINGLE_TRIGGER.getUuid());
-            doubleTriggerCharacteristic = service.getCharacteristic(OrderCHAR.CHAR_DOUBLE_TRIGGER.getUuid());
-            longTriggerCharacteristic = service.getCharacteristic(OrderCHAR.CHAR_LONG_TRIGGER.getUuid());
             accCharacteristic = service.getCharacteristic(OrderCHAR.CHAR_ACC.getUuid());
             passwordCharacteristic = service.getCharacteristic(OrderCHAR.CHAR_PASSWORD.getUuid());
             enableParamsNotify();
@@ -139,48 +133,6 @@ final class MokoBleConfig extends MokoBleManager {
 
     public void disablePasswordNotify() {
         disableNotifications(passwordCharacteristic).enqueue();
-    }
-
-    public void enableSingleTriggerNotify() {
-        setIndicationCallback(singleTriggerCharacteristic).with((device, data) -> {
-            final byte[] value = data.getValue();
-            XLog.e("onDataReceived");
-            XLog.e("device to app : " + MokoUtils.bytesToHexString(value));
-            mMokoResponseCallback.onCharacteristicChanged(singleTriggerCharacteristic, value);
-        });
-        enableNotifications(singleTriggerCharacteristic).enqueue();
-    }
-
-    public void disableSingleTriggerNotify() {
-        disableNotifications(singleTriggerCharacteristic).enqueue();
-    }
-
-    public void enableDoubleTriggerNotify() {
-        setIndicationCallback(doubleTriggerCharacteristic).with((device, data) -> {
-            final byte[] value = data.getValue();
-            XLog.e("onDataReceived");
-            XLog.e("device to app : " + MokoUtils.bytesToHexString(value));
-            mMokoResponseCallback.onCharacteristicChanged(doubleTriggerCharacteristic, value);
-        });
-        enableNotifications(doubleTriggerCharacteristic).enqueue();
-    }
-
-    public void disableDoubleTriggerNotify() {
-        disableNotifications(doubleTriggerCharacteristic).enqueue();
-    }
-
-    public void enableLongTriggerNotify() {
-        setIndicationCallback(longTriggerCharacteristic).with((device, data) -> {
-            final byte[] value = data.getValue();
-            XLog.e("onDataReceived");
-            XLog.e("device to app : " + MokoUtils.bytesToHexString(value));
-            mMokoResponseCallback.onCharacteristicChanged(longTriggerCharacteristic, value);
-        });
-        enableNotifications(longTriggerCharacteristic).enqueue();
-    }
-
-    public void disableLongTriggerNotify() {
-        disableNotifications(longTriggerCharacteristic).enqueue();
     }
 
     public void enableAccNotify() {

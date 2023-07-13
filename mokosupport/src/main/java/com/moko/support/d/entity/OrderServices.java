@@ -7,8 +7,10 @@ public enum OrderServices {
     SERVICE_CUSTOM(UUID.fromString("0000AA00-0000-1000-8000-00805F9B34FB")),
     SERVICE_ADV_TRIGGER(UUID.fromString("0000FEE0-0000-1000-8000-00805F9B34FB")),
     SERVICE_ADV_DEVICE(UUID.fromString("0000EA00-0000-1000-8000-00805F9B34FB")),
+    SERVICE_ADV_PRODUCT_TEST(UUID.fromString("0000EC01-0000-1000-8000-00805F9B34FB")),
+
     ;
-    private UUID uuid;
+    private final UUID uuid;
 
     OrderServices(UUID uuid) {
         this.uuid = uuid;

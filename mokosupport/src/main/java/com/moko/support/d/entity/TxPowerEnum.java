@@ -5,6 +5,7 @@ import java.io.Serializable;
 
 public enum TxPowerEnum implements Serializable {
     NEGATIVE_40(-40),
+    NEGATIVE_30(-30),
     NEGATIVE_20(-20),
     NEGATIVE_16(-16),
     NEGATIVE_12(-12),

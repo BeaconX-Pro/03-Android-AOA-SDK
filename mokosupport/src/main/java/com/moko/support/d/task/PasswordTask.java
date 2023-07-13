@@ -20,18 +20,12 @@ public class PasswordTask extends OrderTask {
     }
 
     public void setData(ParamsKeyEnum key) {
-        switch (key) {
-            case KEY_MODIFY_PASSWORD:
-            case KEY_VERIFY_PASSWORD_ENABLE:
-                createGetParamsData(key.getParamsKey());
-                break;
-        }
+        createGetParamsData(key.getParamsKey());
     }
 
     private void createGetParamsData(int paramsKey) {
         data = new byte[]{(byte) 0xEA, (byte) 0x00, (byte) paramsKey, (byte) 0x00};
     }
-
 
     public void setPassword(String password) {
         byte[] passwordBytes = password.getBytes();
