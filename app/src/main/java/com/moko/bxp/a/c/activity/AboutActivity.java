@@ -47,8 +47,8 @@ public class AboutActivity extends BaseActivity {
     public void onFeedback(View view) {
         if (isWindowLocked())
             return;
-        File trackerLog = new File(AOACMainActivity.PATH_LOGCAT + File.separator + (BuildConfig.IS_LIBRARY ? "MKButton.txt" : "MKButtonD.txt"));
-        File trackerLogBak = new File(AOACMainActivity.PATH_LOGCAT + File.separator + (BuildConfig.IS_LIBRARY ? "MKButton.txt.bak" : "MKButtonD.txt.bak"));
+        File trackerLog = new File(AOACMainActivity.PATH_LOGCAT + File.separator + (BuildConfig.IS_LIBRARY ? "mokoBeaconXPro.txt" : "BXP_A_C.txt"));
+        File trackerLogBak = new File(AOACMainActivity.PATH_LOGCAT + File.separator + (BuildConfig.IS_LIBRARY ? "mokoBeaconXPro.txt.bak" : "BXP_A_C.txt.bak"));
         File trackerCrashLog = new File(AOACMainActivity.PATH_LOGCAT + File.separator + (BuildConfig.IS_LIBRARY ? "crash_log.txt" : "d_crash_log.txt"));
         if (!trackerLog.exists() || !trackerLog.canRead()) {
             ToastUtils.showToast(this, "File is not exists!");

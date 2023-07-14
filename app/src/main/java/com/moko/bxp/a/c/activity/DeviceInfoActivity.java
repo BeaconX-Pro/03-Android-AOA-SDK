@@ -71,6 +71,7 @@ public class DeviceInfoActivity extends BaseActivity implements RadioGroup.OnChe
     private boolean mReceiverTag = false;
     private int mDisconnectType;
     public boolean isAdvParamsSuc;
+    private boolean isModifyPassword;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -367,9 +368,7 @@ public class DeviceInfoActivity extends BaseActivity implements RadioGroup.OnChe
                 //得到uri，后面就是将uri转化成file的过程。
                 Uri uri = data.getData();
                 String firmwareFilePath = FileUtils.getPath(this, uri);
-                if (TextUtils.isEmpty(firmwareFilePath)) {
-                    return;
-                }
+                if (TextUtils.isEmpty(firmwareFilePath)) return;
                 final File firmwareFile = new File(firmwareFilePath);
                 if (firmwareFile.exists()) {
                     final DfuServiceInitiator starter = new DfuServiceInitiator(mDeviceMac)
@@ -496,8 +495,6 @@ public class DeviceInfoActivity extends BaseActivity implements RadioGroup.OnChe
         orderTasks.add(OrderTaskAssembler.getDeviceMac());
         AOAMokoSupport.getInstance().sendOrder(orderTasks.toArray(new OrderTask[0]));
     }
-
-    private boolean isModifyPassword;
 
     public void modifyPassword(String password) {
         isModifyPassword = true;
@@ -649,7 +646,6 @@ public class DeviceInfoActivity extends BaseActivity implements RadioGroup.OnChe
             isUpgrading = true;
             mDFUDialog.setMessage("DfuProcessStarting...");
         }
-
 
         @Override
         public void onEnablingDfuMode(@NonNull String deviceAddress) {

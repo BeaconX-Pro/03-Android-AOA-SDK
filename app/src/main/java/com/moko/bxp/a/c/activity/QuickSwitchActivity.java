@@ -33,6 +33,8 @@ import java.util.List;
 
 public class QuickSwitchActivity extends BaseActivity {
     private ACActivityQuickSwitchBinding mBind;
+    private boolean enablePasswordVerify;
+    private boolean enableLedIndicator;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -145,9 +147,6 @@ public class QuickSwitchActivity extends BaseActivity {
             }
         });
     }
-
-    private boolean enablePasswordVerify;
-    private boolean enableLedIndicator;
 
     private void setPasswordVerify(int enable) {
         this.enablePasswordVerify = enable == 1;

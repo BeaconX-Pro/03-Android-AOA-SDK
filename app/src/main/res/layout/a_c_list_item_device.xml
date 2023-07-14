@@ -18,12 +18,13 @@
             android:id="@+id/tv_mac"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="12dp"
+            android:layout_marginLeft="8dp"
             android:layout_toLeftOf="@id/tv_connect"
             android:layout_toRightOf="@id/tv_rssi"
             android:textColor="@color/black_333333"
             android:textSize="18sp"
             android:textStyle="bold"
+            android:includeFontPadding="false"
             tools:text="AA:BB:CC:DD:EE:FF" />
 
         <TextView
@@ -41,11 +42,11 @@
             android:id="@+id/tv_connect"
             android:layout_width="wrap_content"
             android:layout_height="35dp"
-            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
             android:background="@drawable/shape_radius_blue_bg"
             android:gravity="center"
-            android:paddingLeft="12dp"
-            android:paddingRight="12dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
             android:text="CONNECT"
             android:textColor="@color/white_ffffff" />
     </RelativeLayout>

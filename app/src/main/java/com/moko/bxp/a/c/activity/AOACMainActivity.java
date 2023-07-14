@@ -68,6 +68,7 @@ public class AOACMainActivity extends BaseActivity implements MokoScanDeviceCall
     private boolean isPasswordError;
     private AdvInfoAnalysisImpl advInfoAnalysisImpl;
     public static String PATH_LOGCAT;
+    private boolean enablePwd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -222,19 +223,6 @@ public class AOACMainActivity extends BaseActivity implements MokoScanDeviceCall
         }
     }
 
-    private boolean enablePwd;
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK) {
-            if (requestCode == AppConstants.REQUEST_CODE_DEVICE_INFO) {
-                mPassword = "";
-                if (animation == null) startScan();
-            }
-        }
-    }
-
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onRefresh(String flag) {
         if ("refresh".equals(flag)) {
@@ -253,7 +241,6 @@ public class AOACMainActivity extends BaseActivity implements MokoScanDeviceCall
         }
         EventBus.getDefault().unregister(this);
     }
-
 
     @Override
     public void onStartScan() {
@@ -276,11 +263,9 @@ public class AOACMainActivity extends BaseActivity implements MokoScanDeviceCall
 
     @Override
     public void onScanDevice(DeviceInfo deviceInfo) {
-        if ("DD:81:35:17:CF:8E".equals(deviceInfo.mac)) {
-            AdvInfo advInfo = advInfoAnalysisImpl.parseDeviceInfo(deviceInfo);
-            if (advInfo == null) return;
-            advInfoHashMap.put(advInfo.mac, advInfo);
-        }
+        AdvInfo advInfo = advInfoAnalysisImpl.parseDeviceInfo(deviceInfo);
+        if (advInfo == null) return;
+        advInfoHashMap.put(advInfo.mac, advInfo);
     }
 
     @Override

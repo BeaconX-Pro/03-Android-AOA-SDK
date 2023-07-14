@@ -4,7 +4,6 @@
     android:orientation="vertical"
     android:background="@drawable/shape_radius_white_bg"
     android:layout_width="match_parent"
-    android:padding="12dp"
     android:layout_height="wrap_content">
 
     <LinearLayout

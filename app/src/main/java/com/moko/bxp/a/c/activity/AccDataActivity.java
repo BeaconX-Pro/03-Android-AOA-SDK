@@ -164,7 +164,6 @@ public class AccDataActivity extends BaseActivity {
         mLoadingMessageDialog = new LoadingMessageDialog();
         mLoadingMessageDialog.setMessage("Syncing..");
         mLoadingMessageDialog.show(getSupportFragmentManager());
-
     }
 
     public void dismissSyncProgressDialog() {
