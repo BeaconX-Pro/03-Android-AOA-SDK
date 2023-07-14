@@ -28,7 +28,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:text="@string/alarm_title"
+            android:text="ADVERTISEMENT"
             android:textColor="@color/white_ffffff"
             android:textSize="17sp"
             android:textStyle="bold" />
@@ -42,8 +42,7 @@
             android:onClick="onSave"
             android:paddingLeft="16dp"
             android:paddingRight="16dp"
-            android:src="@drawable/save"
-            android:visibility="gone" />
+            android:src="@drawable/save" />
     </RelativeLayout>
 
     <FrameLayout

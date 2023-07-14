@@ -51,7 +51,7 @@ public class ParamsTask extends OrderTask {
         response.responseValue = data;
     }
 
-    public void setPowerSavingStaticTriggerTime(@IntRange(from = 1, to = 65535) int time) {
+    public void setPowerSavingStaticTriggerTime(@IntRange(from = 0, to = 65535) int time) {
         byte[] intervalBytes = MokoUtils.toByteArray(time, 2);
         data = new byte[]{
                 (byte) 0xEA,

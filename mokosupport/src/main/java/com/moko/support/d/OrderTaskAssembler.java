@@ -102,7 +102,7 @@ public class OrderTaskAssembler {
         return task;
     }
 
-    public static OrderTask setPowerSavingStaticTriggerTime(@IntRange(from = 1, to = 65535) int time) {
+    public static OrderTask setPowerSavingStaticTriggerTime(@IntRange(from = 0, to = 65535) int time) {
         ParamsTask task = new ParamsTask();
         task.setPowerSavingStaticTriggerTime(time);
         return task;

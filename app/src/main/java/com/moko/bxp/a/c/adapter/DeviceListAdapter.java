@@ -40,7 +40,7 @@ public class DeviceListAdapter extends BaseQuickAdapter<AdvInfo, BaseViewHolder>
         }
         if (item.advType == 2) {
             View view = LayoutInflater.from(mContext).inflate(R.layout.layout_device_info, null);
-            helper.setText(R.id.tv_battery, item.battery < 0 ? "N/A" : (item.batterPercent * 10 + "%"));
+            helper.setText(R.id.tv_battery, item.batterPercent < 0 ? "N/A" : (item.batterPercent * 10 + "%"));
             TextView tvAdvChannel = view.findViewById(R.id.tvAdvChannel);
             TextView tvAdvInterval = view.findViewById(R.id.tvAdvInterval);
             TextView tvTxPower = view.findViewById(R.id.tvTxPower);
@@ -48,11 +48,12 @@ public class DeviceListAdapter extends BaseQuickAdapter<AdvInfo, BaseViewHolder>
             TextView tvAlarmCount = view.findViewById(R.id.tvAlarmCount);
             TextView tvTemp = view.findViewById(R.id.tvTemp);
             tvAdvChannel.setText(item.deviceInfoMhz);
-            tvAdvInterval.setText(item.deviceInfoAdvInterval + "ms");
+            if (item.deviceInfoAdvInterval != -1)
+                tvAdvInterval.setText(item.deviceInfoAdvInterval + "ms");
             tvTxPower.setText(item.deviceInfoTxPower);
             tvAlarmStatus.setText(item.alarmStatus);
-            tvAlarmCount.setText(String.valueOf(item.alarmCount));
-            tvTemp.setText(item.temperature + "℃");
+            if (item.alarmCount != -1) tvAlarmCount.setText(String.valueOf(item.alarmCount));
+            if (item.temperature != -1) tvTemp.setText(item.temperature + "℃");
             parent.addView(view);
         }
     }

@@ -3,6 +3,7 @@ package com.moko.bxp.a.c.utils;
 import android.os.ParcelUuid;
 import android.os.SystemClock;
 
+import com.elvishew.xlog.XLog;
 import com.moko.ble.lib.utils.MokoUtils;
 import com.moko.bxp.a.c.entity.AdvInfo;
 import com.moko.support.d.entity.DeviceInfo;
@@ -23,9 +24,9 @@ public class AdvInfoAnalysisImpl implements DeviceInfoAnalysis<AdvInfo> {
     }
 
     private String getProductMHZ(int paramsInfo) {
-        int bit0 = paramsInfo;
-        int bit1 = paramsInfo >> 1;
-        int bit2 = paramsInfo >> 2;
+        int bit0 = (paramsInfo & 0x01) == 1 ? 1 : 0;
+        int bit1 = (paramsInfo >> 1 & 0x01) == 1 ? 1 : 0;
+        int bit2 = (paramsInfo >> 2 & 0x01) == 1 ? 1 : 0;
         StringBuilder builder = new StringBuilder();
         builder.append(bit0).append(bit1).append(bit2);
         String result = builder.toString();
@@ -37,9 +38,9 @@ public class AdvInfoAnalysisImpl implements DeviceInfoAnalysis<AdvInfo> {
     }
 
     private String getDeviceInfoMHZ(int paramsInfo) {
-        int bit0 = paramsInfo;
-        int bit1 = paramsInfo >> 1;
-        int bit2 = paramsInfo >> 2;
+        int bit0 = (paramsInfo & 0x01) == 1 ? 1 : 0;
+        int bit1 = (paramsInfo >> 1 & 0x01) == 1 ? 1 : 0;
+        int bit2 = (paramsInfo >> 2 & 0x01) == 1 ? 1 : 0;
         StringBuilder builder = new StringBuilder();
         builder.append(bit0).append(bit1).append(bit2);
         String result = builder.toString();
@@ -52,10 +53,10 @@ public class AdvInfoAnalysisImpl implements DeviceInfoAnalysis<AdvInfo> {
     }
 
     private String getDbm(int paramsInfo) {
-        int bit4 = paramsInfo >> 4;
-        int bit5 = paramsInfo >> 5;
-        int bit6 = paramsInfo >> 6;
-        int bit7 = paramsInfo >> 7;
+        int bit4 = (paramsInfo >> 4 & 0x01) == 1 ? 1 : 0;
+        int bit5 = (paramsInfo >> 5 & 0x01) == 1 ? 1 : 0;
+        int bit6 = (paramsInfo >> 6 & 0x01) == 1 ? 1 : 0;
+        int bit7 = (paramsInfo >> 7 & 0x01) == 1 ? 1 : 0;
         StringBuilder builder = new StringBuilder();
         builder.append(bit4).append(bit5).append(bit6).append(bit7);
         String result = builder.toString();
@@ -73,13 +74,13 @@ public class AdvInfoAnalysisImpl implements DeviceInfoAnalysis<AdvInfo> {
     }
 
     private int getAdInterval(int interval) {
-        int bit0 = interval;
-        int bit1 = interval >> 1;
-        int bit2 = interval >> 2;
-        int bit3 = interval >> 3;
-        int bit4 = interval >> 4;
-        int bit5 = interval >> 5;
-        int bit6 = interval >> 6;
+        int bit0 = (interval & 0x01) == 1 ? 1 : 0;
+        int bit1 = (interval >> 1 & 0x01) == 1 ? 1 : 0;
+        int bit2 = (interval >> 2 & 0x01) == 1 ? 1 : 0;
+        int bit3 = (interval >> 3 & 0x01) == 1 ? 1 : 0;
+        int bit4 = (interval >> 4 & 0x01) == 1 ? 1 : 0;
+        int bit5 = (interval >> 5 & 0x01) == 1 ? 1 : 0;
+        int bit6 = (interval >> 6 & 0x01) == 1 ? 1 : 0;
         StringBuilder builder = new StringBuilder();
         builder.append(bit0).append(bit1).append(bit2).append(bit3).append(bit4).append(bit5).append(bit6);
         String result = builder.toString();
@@ -113,46 +114,53 @@ public class AdvInfoAnalysisImpl implements DeviceInfoAnalysis<AdvInfo> {
         String deviceInfoMhz = null;
         String deviceInfoTxPower = null;
         int deviceInfoAdvInterval = -1;
-        double temperature = -100;
+        double temperature = -1;
         int alarmCount = -1;
         String alarmStatus = null;
         int advType = -1;
+        int key = -1;
         //产测信息帧
         byte[] serviceData = record.getServiceData(new ParcelUuid(OrderServices.SERVICE_ADV_PRODUCT_TEST.getUuid()));
         if (null != serviceData && serviceData.length == 13) {
-            battery = MokoUtils.toInt(Arrays.copyOfRange(serviceData, 0, 2));
-            productMhz = getProductMHZ(serviceData[8] & 0xff);
-            productTxPower = getDbm(serviceData[8] & 0xff);
-            productAdvInterval = getAdInterval(serviceData[9] & 0xff);
+            battery = MokoUtils.toInt(Arrays.copyOfRange(serviceData, 1, 3));
+            productMhz = getProductMHZ(serviceData[9] & 0xff);
+            productTxPower = getDbm(serviceData[9] & 0xff);
+            productAdvInterval = getAdInterval(serviceData[10] & 0xff);
             advType = 1;
+            key = 0x01;
         }
         //设备信息帧
-        byte[] specificData = record.getManufacturerSpecificData(0x000D);
-        if (null != serviceData && serviceData.length == 27) {
-            if (specificData[0] != 0x04) return null;
-            int key = specificData[1] & 0xff;
+        byte[] bytes = record.getManufacturerSpecificData(0x000D);
+        if (null != bytes && bytes.length == 27) {
+            if (bytes[0] != 0x04) return null;
             advType = 2;
+            key = bytes[1] & 0xff;
             if (key == 0x10) {
                 //参数信息定位包
-                deviceInfoMhz = getDeviceInfoMHZ(specificData[2] & 0xff);
-                deviceInfoTxPower = getDbm(specificData[2] & 0xff);
-                deviceInfoAdvInterval = getAdInterval(serviceData[4] & 0xff);
+                deviceInfoMhz = getDeviceInfoMHZ(bytes[2] & 0xff);
+                deviceInfoTxPower = getDbm(bytes[2] & 0xff);
+                deviceInfoAdvInterval = getAdInterval(bytes[4] & 0xff);
                 //报警状态
-                int i = specificData[3] & 0xff;
-                alarmStatus = i >> 3 == 1 ? "Triggerd" : "Standy";
+                int i = bytes[3] & 0xff;
+                alarmStatus = (i >> 3 & 0x01) == 1 ? "Triggerd" : "Standy";
                 //电量百分比
-                int batterInfo = specificData[3] & 0xff;
-                int bit4 = batterInfo >> 4;
-                int bit5 = batterInfo >> 5;
-                int bit6 = batterInfo >> 6;
-                int bit7 = batterInfo >> 7;
-                batterPercent = Integer.parseInt("" + bit4 + bit5 + bit6 + bit7, 2);
+                int batterInfo = bytes[3] & 0xff;
+                int bit4 = (batterInfo >> 4 & 0x01) == 1 ? 1 : 0;
+                int bit5 = (batterInfo >> 5 & 0x01) == 1 ? 1 : 0;
+                int bit6 = (batterInfo >> 6 & 0x01) == 1 ? 1 : 0;
+                int bit7 = (batterInfo >> 7 & 0x01) == 1 ? 1 : 0;
+                batterPercent = Integer.parseInt("" + bit7 + bit6 + bit5 + bit4, 2);
             } else if (key == 0x1C) {
-                temperature = (specificData[2] + 200) / 10.0;
-                String count = MokoUtils.bytesToHexString(Arrays.copyOfRange(specificData, 3, 5));
-                alarmCount = Integer.parseInt(count, 16);
+                temperature = ((bytes[2] & 0xff) + 200) / 10.0;
+                String countHigh = MokoUtils.byte2HexString(bytes[3]);
+                String countLow = MokoUtils.byte2HexString(bytes[4]);
+                alarmCount = Integer.parseInt(countHigh + countLow, 16);
             }
         }
+        XLog.i("333333*****" + MokoUtils.bytesToHexString(bytes) + "type=" + advType);
+        if (advType == -1 || (key != 0x10 && key != 0x1C && key != 0x18 && key != 0x01))
+            return null;
+        XLog.i("333333//////////////////" + MokoUtils.bytesToHexString(serviceData));
         AdvInfo advInfo;
         if (beaconXInfoHashMap.containsKey(deviceInfo.mac)) {
             advInfo = beaconXInfoHashMap.get(deviceInfo.mac);
@@ -160,22 +168,26 @@ public class AdvInfoAnalysisImpl implements DeviceInfoAnalysis<AdvInfo> {
             advInfo.rssi = deviceInfo.rssi;
             advInfo.battery = battery;
             advInfo.connectable = result.isConnectable();
+            if (key == 0x1C) {
+                advInfo.temperature = temperature;
+                advInfo.alarmCount = alarmCount;
+            }
+            if (key == 0x10) {
+                advInfo.deviceInfoAdvInterval = deviceInfoAdvInterval;
+                advInfo.deviceInfoMhz = deviceInfoMhz;
+                advInfo.deviceInfoTxPower = deviceInfoTxPower;
+                advInfo.alarmStatus = alarmStatus;
+                advInfo.batterPercent = batterPercent;
+            }
             advInfo.productAdvInterval = productAdvInterval;
             advInfo.productMhz = productMhz;
             advInfo.productTxPower = productTxPower;
-            advInfo.deviceInfoAdvInterval = deviceInfoAdvInterval;
-            advInfo.deviceInfoMhz = deviceInfoMhz;
-            advInfo.deviceInfoTxPower = deviceInfoTxPower;
             advInfo.txPower = record.getTxPowerLevel();
-            advInfo.temperature = temperature;
-            advInfo.alarmCount = alarmCount;
-            advInfo.alarmStatus = alarmStatus;
             advInfo.scanRecord = deviceInfo.scanRecord;
             long currentTime = SystemClock.elapsedRealtime();
             advInfo.intervalTime = currentTime - advInfo.scanTime;
             advInfo.scanTime = currentTime;
             advInfo.advType = advType;
-            advInfo.batterPercent = batterPercent;
         } else {
             advInfo = new AdvInfo();
             advInfo.name = deviceInfo.name;

@@ -10,6 +10,8 @@ import com.moko.bxp.a.c.databinding.FragmentAoaSettingBinding;
 
 public class SettingFragment extends Fragment {
     private FragmentAoaSettingBinding mBind;
+    private boolean showPwd;
+
     public SettingFragment() {
     }
 
@@ -20,6 +22,7 @@ public class SettingFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mBind = FragmentAoaSettingBinding.inflate(inflater, container, false);
+        setPwdShown(showPwd);
         return mBind.getRoot();
     }
 
@@ -34,6 +37,8 @@ public class SettingFragment extends Fragment {
     }
 
     public void setPwdShown(boolean showPwd) {
+        this.showPwd = showPwd;
+        if (null == mBind) return;
         mBind.tvModifyPwd.setVisibility(showPwd ? View.VISIBLE : View.GONE);
         mBind.lineModifyPwd.setVisibility(showPwd ? View.VISIBLE : View.GONE);
     }

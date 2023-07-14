@@ -66,7 +66,6 @@ public class DeviceInfoActivity extends BaseActivity implements RadioGroup.OnChe
     private AdvertisementFragment alarmFragment;
     private SettingFragment settingFragment;
     private DeviceFragment deviceFragment;
-    public String mPassword;
     public String mDeviceMac;
     private boolean mIsClose;
     private boolean mReceiverTag = false;
@@ -78,7 +77,6 @@ public class DeviceInfoActivity extends BaseActivity implements RadioGroup.OnChe
         super.onCreate(savedInstanceState);
         mBind = ACActivityDeviceInfoBinding.inflate(getLayoutInflater());
         setContentView(mBind.getRoot());
-        mPassword = getIntent().getStringExtra(AppConstants.EXTRA_KEY_PASSWORD);
         fragmentManager = getFragmentManager();
         initFragment();
         mBind.rgOptions.setOnCheckedChangeListener(this);
@@ -92,8 +90,15 @@ public class DeviceInfoActivity extends BaseActivity implements RadioGroup.OnChe
             // 蓝牙未打开，开启蓝牙
             AOAMokoSupport.getInstance().enableBluetooth();
         }
-        getAdvertiseMent();
-        AOAMokoSupport.getInstance().sendOrder(OrderTaskAssembler.getSensorType());
+        showSyncingProgressDialog();
+        mBind.tvTitle.postDelayed(() -> {
+            List<OrderTask> orderTasks = new ArrayList<>(4);
+            orderTasks.add(OrderTaskAssembler.getNormalAdvParams());
+            orderTasks.add(OrderTaskAssembler.getButtonTriggerParams());
+            orderTasks.add(OrderTaskAssembler.getSensorType());
+            orderTasks.add(OrderTaskAssembler.getDeviceMac());
+            AOAMokoSupport.getInstance().sendOrder(orderTasks.toArray(new OrderTask[0]));
+        }, 500);
         boolean enablePwd = getIntent().getBooleanExtra("pwdEnable", false);
         settingFragment.setPwdShown(enablePwd);
     }
@@ -104,18 +109,6 @@ public class DeviceInfoActivity extends BaseActivity implements RadioGroup.OnChe
         final String action = event.getAction();
         runOnUiThread(() -> {
             if (MokoConstants.ACTION_DISCONNECTED.equals(action)) {
-                if (AOAMokoSupport.getInstance().exportSingleEvents != null) {
-                    AOAMokoSupport.getInstance().exportSingleEvents.clear();
-                    AOAMokoSupport.getInstance().storeSingleEventString = null;
-                }
-                if (AOAMokoSupport.getInstance().exportDoubleEvents != null) {
-                    AOAMokoSupport.getInstance().exportDoubleEvents.clear();
-                    AOAMokoSupport.getInstance().storeDoubleEventString = null;
-                }
-                if (AOAMokoSupport.getInstance().exportLongEvents != null) {
-                    AOAMokoSupport.getInstance().exportLongEvents.clear();
-                    AOAMokoSupport.getInstance().storeLongEventString = null;
-                }
                 // 设备断开，通知页面更新
                 if (mIsClose) return;
                 if (mDisconnectType > 0) return;
@@ -129,7 +122,7 @@ public class DeviceInfoActivity extends BaseActivity implements RadioGroup.OnChe
                         dialog.setConfirm("Exit");
                         dialog.setCancelGone();
                         dialog.setOnAlertConfirmListener(() -> {
-                            setResult(RESULT_OK);
+                            EventBus.getDefault().post("refresh");
                             finish();
                         });
                         dialog.show(getSupportFragmentManager());
@@ -381,7 +374,6 @@ public class DeviceInfoActivity extends BaseActivity implements RadioGroup.OnChe
                 if (firmwareFile.exists()) {
                     final DfuServiceInitiator starter = new DfuServiceInitiator(mDeviceMac)
                             .setKeepBond(false)
-                            .setForeground(false)
                             .setDisableNotification(true);
                     starter.setZip(null, firmwareFilePath);
                     starter.start(this, DfuService.class);

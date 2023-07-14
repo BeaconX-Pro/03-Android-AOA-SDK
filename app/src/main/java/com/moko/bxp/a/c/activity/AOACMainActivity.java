@@ -188,15 +188,15 @@ public class AOACMainActivity extends BaseActivity implements MokoScanDeviceCall
                     if (configKeyEnum == ParamsKeyEnum.KEY_PASSWORD) {
                         if (flag == 1 && length == 1) {
                             int result = value[4] & 0xFF;
+                            dismissLoadingMessageDialog();
                             if (result == 0xAA) {
                                 mSavedPassword = mPassword;
                                 SPUtiles.setStringValue(this, AppConstants.SP_KEY_SAVED_PASSWORD, mSavedPassword);
                                 XLog.i("Success");
                                 Intent intent = new Intent(this, DeviceInfoActivity.class);
-                                intent.putExtra("pwdEnable",enablePwd);
+                                intent.putExtra("pwdEnable", enablePwd);
                                 startActivity(intent);
                             } else {
-                                dismissLoadingMessageDialog();
                                 isPasswordError = true;
                                 ToastUtils.showToast(this, "Password incorrect！");
                                 AOAMokoSupport.getInstance().disConnectBle();
@@ -212,7 +212,7 @@ public class AOACMainActivity extends BaseActivity implements MokoScanDeviceCall
                             } else {
                                 enablePwd = false;
                                 Intent intent = new Intent(this, DeviceInfoActivity.class);
-                                intent.putExtra("pwdEnable",enablePwd);
+                                intent.putExtra("pwdEnable", enablePwd);
                                 startActivity(intent);
                             }
                         }
@@ -221,6 +221,7 @@ public class AOACMainActivity extends BaseActivity implements MokoScanDeviceCall
             }
         }
     }
+
     private boolean enablePwd;
 
     @Override
@@ -235,8 +236,8 @@ public class AOACMainActivity extends BaseActivity implements MokoScanDeviceCall
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onRefresh(String flag){
-        if ("refresh".equals(flag)){
+    public void onRefresh(String flag) {
+        if ("refresh".equals(flag)) {
             mPassword = "";
             if (animation == null) startScan();
         }
@@ -275,9 +276,11 @@ public class AOACMainActivity extends BaseActivity implements MokoScanDeviceCall
 
     @Override
     public void onScanDevice(DeviceInfo deviceInfo) {
-        AdvInfo advInfo = advInfoAnalysisImpl.parseDeviceInfo(deviceInfo);
-        if (advInfo == null) return;
-        advInfoHashMap.put(advInfo.mac, advInfo);
+        if ("DD:81:35:17:CF:8E".equals(deviceInfo.mac)) {
+            AdvInfo advInfo = advInfoAnalysisImpl.parseDeviceInfo(deviceInfo);
+            if (advInfo == null) return;
+            advInfoHashMap.put(advInfo.mac, advInfo);
+        }
     }
 
     @Override

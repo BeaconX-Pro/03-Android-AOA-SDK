@@ -10,10 +10,10 @@ import android.widget.SeekBar;
 
 import androidx.fragment.app.FragmentActivity;
 
+import com.elvishew.xlog.XLog;
 import com.moko.bxp.a.c.R;
 import com.moko.bxp.a.c.databinding.FragmentAdvertisementBinding;
 import com.moko.bxp.a.c.dialog.BottomDialog;
-import com.moko.support.d.entity.TxPowerEnum;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,6 +32,7 @@ public class AdvertisementFragment extends Fragment implements SeekBar.OnSeekBar
     private boolean isTrigger;
     private FragmentActivity activity;
     private int triggerAdvDuration;
+    private final int[] txPowerArray = {-40, -30, -20, -16, -12, -8, -4, 0, 3, 4};
 
     public AdvertisementFragment() {
     }
@@ -45,10 +46,16 @@ public class AdvertisementFragment extends Fragment implements SeekBar.OnSeekBar
         mBind = FragmentAdvertisementBinding.inflate(inflater, container, false);
         activity = (FragmentActivity) getActivity();
         mBind.sbTxPower.setOnSeekBarChangeListener(this);
+        mBind.layoutTrigger.sbTriggerTxPower.setOnSeekBarChangeListener(this);
         mBind.ivTrigger.setOnClickListener(v -> {
             isTrigger = !isTrigger;
             mBind.ivTrigger.setImageResource(isTrigger ? R.drawable.ic_checked : R.drawable.ic_unchecked);
             mBind.layoutTrigger.getRoot().setVisibility(isTrigger ? View.VISIBLE : View.GONE);
+            if (isTrigger && mSelectTriggerType == 0) {
+                //本来是关闭的状态 现在打开了默认点击触发 2023.07.14和产品王鑫确认过这里
+                mSelectTriggerType = 1;
+            }
+            mBind.layoutTrigger.tvTriggerType.setText(triggerTypeVal[mSelectTriggerType - 1]);
         });
         mBind.tvAdvChannel.setOnClickListener(v -> onAdvChannelClick());
         mBind.tvAdvInterval.setOnClickListener(v -> onAdvIntervalClick());
@@ -133,10 +140,14 @@ public class AdvertisementFragment extends Fragment implements SeekBar.OnSeekBar
      */
     private void onTriggerTypeClick() {
         BottomDialog dialog = new BottomDialog();
+        if (isTrigger && mSelectTriggerType == 0) {
+            //本来是关闭的状态 现在打开了默认点击触发 2023.07.14和产品王鑫确认过这里
+            mSelectTriggerType = 1;
+        }
         dialog.setDatas(new ArrayList<>(Arrays.asList(triggerTypeVal)), mSelectTriggerType - 1);
         dialog.setListener(value -> {
             mSelectTriggerType = value + 1;
-            mBind.layoutTrigger.tvTriggerType.setText(triggerTypeVal[mSelectTriggerType]);
+            mBind.layoutTrigger.tvTriggerType.setText(triggerTypeVal[value]);
         });
         dialog.show(activity.getSupportFragmentManager());
     }
@@ -179,7 +190,8 @@ public class AdvertisementFragment extends Fragment implements SeekBar.OnSeekBar
                 break;
             }
         }
-        if (mSelectedAdvInterval != -1) mBind.tvAdvInterval.setText(interval);
+        if (mSelectedAdvInterval != -1)
+            mBind.tvAdvInterval.setText(advIntervalVal[mSelectedAdvInterval]);
     }
 
     public void setAdvDuration(int duration) {
@@ -193,22 +205,33 @@ public class AdvertisementFragment extends Fragment implements SeekBar.OnSeekBar
     }
 
     public void updateAdvTxPower(int progress) {
-        TxPowerEnum txPowerEnum = TxPowerEnum.fromOrdinal(progress);
-        int txPower = txPowerEnum.getTxPower();
-        mBind.tvTxPower.setText(String.format("%ddBm", txPower));
-        mTxPower = txPower;
+        XLog.i("333333**********pro" + progress);
+        mBind.sbTxPower.setProgress(getProgress(progress));
+        mBind.tvTxPower.setText(String.format("%ddBm", progress));
+        mTxPower = progress;
+    }
+
+    private int getProgress(int progress) {
+        int index = 0;
+        for (int i = 0; i < txPowerArray.length; i++) {
+            if (progress == txPowerArray[i]) {
+                index = i;
+                break;
+            }
+        }
+        return index;
     }
 
     public void updateTriggerAdvTxPower(int progress) {
-        TxPowerEnum txPowerEnum = TxPowerEnum.fromOrdinal(progress);
-        int txPower = txPowerEnum.getTxPower();
-        mBind.layoutTrigger.tvTriggerTxPower.setText(String.format("%ddBm", txPower));
-        mTriggerTxPower = txPower;
+        mBind.layoutTrigger.sbTriggerTxPower.setProgress(getProgress(progress));
+        mBind.layoutTrigger.tvTriggerTxPower.setText(String.format("%ddBm", progress));
+        mTriggerTxPower = progress;
     }
 
     public void setTriggerData(int advInterval, int txPower, int advDuration, int triggerType) {
         mSelectTriggerType = triggerType;
         isTrigger = triggerType != 0;
+        if (isTrigger) mBind.layoutTrigger.tvTriggerType.setText(triggerTypeVal[triggerType - 1]);
         if (!isTrigger) {
             mBind.ivTrigger.setImageResource(R.drawable.ic_unchecked);
             mBind.layoutTrigger.getRoot().setVisibility(View.GONE);
@@ -235,9 +258,11 @@ public class AdvertisementFragment extends Fragment implements SeekBar.OnSeekBar
     @Override
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
         if (seekBar.getId() == R.id.sb_tx_power) {
-            updateAdvTxPower(progress);
+            mBind.tvTxPower.setText(String.format("%ddBm", txPowerArray[progress]));
+            mTxPower = txPowerArray[progress];
         } else if (seekBar.getId() == R.id.sb_trigger_tx_power) {
-            updateTriggerAdvTxPower(progress);
+            mBind.layoutTrigger.tvTriggerTxPower.setText(String.format("%ddBm", txPowerArray[progress]));
+            mTriggerTxPower = txPowerArray[progress];
         }
     }
 

@@ -98,9 +98,7 @@ public class PowerSavingConfigActivity extends BaseActivity {
                         int cmd = value[2] & 0xFF;
                         if (header != 0xEB) return;
                         ParamsKeyEnum configKeyEnum = ParamsKeyEnum.fromParamKey(cmd);
-                        if (configKeyEnum == null) {
-                            return;
-                        }
+                        if (configKeyEnum == null) return;
                         int length = value[3] & 0xFF;
                         if (flag == 0x01 && length == 0x01) {
                             // write
@@ -157,7 +155,7 @@ public class PowerSavingConfigActivity extends BaseActivity {
         if (isWindowLocked()) return;
         if (isValid()) {
             showSyncingProgressDialog();
-            String timeStr = mBind.etStaticTriggerTime.getText().toString();
+            String timeStr = isEnable ? mBind.etStaticTriggerTime.getText().toString() : "0";
             int time = Integer.parseInt(timeStr);
             ArrayList<OrderTask> orderTasks = new ArrayList<>();
             orderTasks.add(OrderTaskAssembler.setPowerSavingStaticTriggerTime(time));
@@ -172,10 +170,13 @@ public class PowerSavingConfigActivity extends BaseActivity {
     }
 
     private boolean isValid() {
-        if (TextUtils.isEmpty(mBind.etStaticTriggerTime.getText())) return false;
-        String timeStr = mBind.etStaticTriggerTime.getText().toString();
-        int time = Integer.parseInt(timeStr);
-        return time >= 1 && time <= 65535;
+        if (isEnable) {
+            if (TextUtils.isEmpty(mBind.etStaticTriggerTime.getText())) return false;
+            String timeStr = mBind.etStaticTriggerTime.getText().toString();
+            int time = Integer.parseInt(timeStr);
+            return time >= 1 && time <= 65535;
+        }
+        return true;
     }
 
     public void onPowerSavingMode(View view) {
