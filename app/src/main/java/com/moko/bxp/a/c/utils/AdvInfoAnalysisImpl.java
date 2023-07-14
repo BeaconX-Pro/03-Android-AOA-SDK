@@ -27,7 +27,7 @@ public class AdvInfoAnalysisImpl implements DeviceInfoAnalysis<AdvInfo> {
         int bit1 = (paramsInfo >> 1 & 0x01) == 1 ? 1 : 0;
         int bit2 = (paramsInfo >> 2 & 0x01) == 1 ? 1 : 0;
         StringBuilder builder = new StringBuilder();
-        builder.append(bit0).append(bit1).append(bit2);
+        builder.append(bit2).append(bit1).append(bit0);
         String result = builder.toString();
         if ("000".equals(result)) return "2401MHZ";
         if ("001".equals(result)) return "2402MHZ";
@@ -41,7 +41,7 @@ public class AdvInfoAnalysisImpl implements DeviceInfoAnalysis<AdvInfo> {
         int bit1 = (paramsInfo >> 1 & 0x01) == 1 ? 1 : 0;
         int bit2 = (paramsInfo >> 2 & 0x01) == 1 ? 1 : 0;
         StringBuilder builder = new StringBuilder();
-        builder.append(bit0).append(bit1).append(bit2);
+        builder.append(bit2).append(bit1).append(bit0);
         String result = builder.toString();
         if ("000".equals(result)) return "2401MHZ";
         if ("001".equals(result)) return "2402MHZ";
@@ -57,7 +57,7 @@ public class AdvInfoAnalysisImpl implements DeviceInfoAnalysis<AdvInfo> {
         int bit6 = (paramsInfo >> 6 & 0x01) == 1 ? 1 : 0;
         int bit7 = (paramsInfo >> 7 & 0x01) == 1 ? 1 : 0;
         StringBuilder builder = new StringBuilder();
-        builder.append(bit4).append(bit5).append(bit6).append(bit7);
+        builder.append(bit7).append(bit6).append(bit5).append(bit4);
         String result = builder.toString();
         if ("0000".equals(result)) return "0dBm";
         if ("0001".equals(result)) return "+3dBm";
