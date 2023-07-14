@@ -3,7 +3,6 @@ package com.moko.bxp.a.c.utils;
 import android.os.ParcelUuid;
 import android.os.SystemClock;
 
-import com.elvishew.xlog.XLog;
 import com.moko.ble.lib.utils.MokoUtils;
 import com.moko.bxp.a.c.entity.AdvInfo;
 import com.moko.support.d.entity.DeviceInfo;
@@ -151,16 +150,14 @@ public class AdvInfoAnalysisImpl implements DeviceInfoAnalysis<AdvInfo> {
                 int bit7 = (batterInfo >> 7 & 0x01) == 1 ? 1 : 0;
                 batterPercent = Integer.parseInt("" + bit7 + bit6 + bit5 + bit4, 2);
             } else if (key == 0x1C) {
-                temperature = ((bytes[2] & 0xff) + 200) / 10.0;
+                temperature = ((bytes[2]) + 200) / 10.0;
                 String countHigh = MokoUtils.byte2HexString(bytes[3]);
                 String countLow = MokoUtils.byte2HexString(bytes[4]);
                 alarmCount = Integer.parseInt(countHigh + countLow, 16);
             }
         }
-        XLog.i("333333*****" + MokoUtils.bytesToHexString(bytes) + "type=" + advType);
         if (advType == -1 || (key != 0x10 && key != 0x1C && key != 0x18 && key != 0x01))
             return null;
-        XLog.i("333333//////////////////" + MokoUtils.bytesToHexString(serviceData));
         AdvInfo advInfo;
         if (beaconXInfoHashMap.containsKey(deviceInfo.mac)) {
             advInfo = beaconXInfoHashMap.get(deviceInfo.mac);

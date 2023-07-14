@@ -371,6 +371,7 @@ public class DeviceInfoActivity extends BaseActivity implements RadioGroup.OnChe
                 if (TextUtils.isEmpty(firmwareFilePath)) return;
                 final File firmwareFile = new File(firmwareFilePath);
                 if (firmwareFile.exists()) {
+                    XLog.i("333333mac=" + mDeviceMac);
                     final DfuServiceInitiator starter = new DfuServiceInitiator(mDeviceMac)
                             .setKeepBond(false)
                             .setDisableNotification(true);
@@ -599,6 +600,7 @@ public class DeviceInfoActivity extends BaseActivity implements RadioGroup.OnChe
         dialog.setConfirm(R.string.ok);
         dialog.setOnAlertConfirmListener(() -> {
             isUpgrading = false;
+            AOAMokoSupport.getInstance().disConnectBle();
             EventBus.getDefault().post("refresh");
             finish();
         });
@@ -677,7 +679,8 @@ public class DeviceInfoActivity extends BaseActivity implements RadioGroup.OnChe
 
         @Override
         public void onError(@NonNull String deviceAddress, int error, int errorType, String message) {
-            XLog.i("DFU Error:" + message);
+            XLog.i("DFU Error:" + message + error);
+            dismissDFUProgressDialog();
         }
     };
 

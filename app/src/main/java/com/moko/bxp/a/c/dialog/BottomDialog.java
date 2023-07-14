@@ -4,28 +4,24 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
-import com.moko.bxp.a.c.databinding.DialogBottomBinding;
+import com.moko.bxp.a.c.databinding.ACDialogBottomBinding;
 
 import java.util.ArrayList;
 
-public class BottomDialog extends MokoBaseDialog<DialogBottomBinding> {
-
-
+public class BottomDialog extends MokoBaseDialog<ACDialogBottomBinding> {
     private ArrayList<String> mDatas;
     private int mIndex;
 
     @Override
-    protected DialogBottomBinding getViewBind(LayoutInflater inflater, ViewGroup container) {
-        return DialogBottomBinding.inflate(inflater, container, false);
+    protected ACDialogBottomBinding getViewBind(LayoutInflater inflater, ViewGroup container) {
+        return ACDialogBottomBinding.inflate(inflater, container, false);
     }
 
     @Override
     protected void onCreateView() {
         mBind.wvBottomD.setData(mDatas);
         mBind.wvBottomD.setDefault(mIndex);
-        mBind.tvCancel.setOnClickListener(v -> {
-            dismiss();
-        });
+        mBind.tvCancel.setOnClickListener(v -> dismiss());
         mBind.tvConfirm.setOnClickListener(v -> {
             if (TextUtils.isEmpty(mBind.wvBottomD.getSelectedText())) {
                 return;
