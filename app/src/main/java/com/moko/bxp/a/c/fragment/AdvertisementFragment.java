@@ -117,7 +117,7 @@ public class AdvertisementFragment extends Fragment implements SeekBar.OnSeekBar
             if (TextUtils.isEmpty(mBind.layoutTrigger.etTriggerAdvDuration.getText())) return false;
             int triggerDuration = Integer.parseInt(mBind.layoutTrigger.etTriggerAdvDuration.getText().toString());
             this.triggerAdvDuration = triggerDuration;
-            return triggerDuration <= 65535;
+            return triggerDuration >= 1 && triggerDuration <= 65535;
         }
         return true;
     }

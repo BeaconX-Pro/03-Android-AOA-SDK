@@ -22,21 +22,7 @@ public class AdvInfoAnalysisImpl implements DeviceInfoAnalysis<AdvInfo> {
         this.beaconXInfoHashMap = new HashMap<>();
     }
 
-    private String getProductMHZ(int paramsInfo) {
-        int bit0 = (paramsInfo & 0x01) == 1 ? 1 : 0;
-        int bit1 = (paramsInfo >> 1 & 0x01) == 1 ? 1 : 0;
-        int bit2 = (paramsInfo >> 2 & 0x01) == 1 ? 1 : 0;
-        StringBuilder builder = new StringBuilder();
-        builder.append(bit2).append(bit1).append(bit0);
-        String result = builder.toString();
-        if ("000".equals(result)) return "2401MHZ";
-        if ("001".equals(result)) return "2402MHZ";
-        if ("010".equals(result)) return "2480MHZ";
-        if ("100".equals(result)) return "2481MHZ";
-        return null;
-    }
-
-    private String getDeviceInfoMHZ(int paramsInfo) {
+    private String getAdvChannel(int paramsInfo) {
         int bit0 = (paramsInfo & 0x01) == 1 ? 1 : 0;
         int bit1 = (paramsInfo >> 1 & 0x01) == 1 ? 1 : 0;
         int bit2 = (paramsInfo >> 2 & 0x01) == 1 ? 1 : 0;
@@ -113,7 +99,7 @@ public class AdvInfoAnalysisImpl implements DeviceInfoAnalysis<AdvInfo> {
         String deviceInfoMhz = null;
         String deviceInfoTxPower = null;
         int deviceInfoAdvInterval = -1;
-        double temperature = -1;
+        int temperature = -1;
         int alarmCount = -1;
         String alarmStatus = null;
         int advType = -1;
@@ -122,7 +108,7 @@ public class AdvInfoAnalysisImpl implements DeviceInfoAnalysis<AdvInfo> {
         byte[] serviceData = record.getServiceData(new ParcelUuid(OrderServices.SERVICE_ADV_PRODUCT_TEST.getUuid()));
         if (null != serviceData && serviceData.length == 13) {
             battery = MokoUtils.toInt(Arrays.copyOfRange(serviceData, 1, 3));
-            productMhz = getProductMHZ(serviceData[9] & 0xff);
+            productMhz = getAdvChannel(serviceData[9] & 0xff);
             productTxPower = getDbm(serviceData[9] & 0xff);
             productAdvInterval = getAdInterval(serviceData[10] & 0xff);
             advType = 1;
@@ -136,7 +122,7 @@ public class AdvInfoAnalysisImpl implements DeviceInfoAnalysis<AdvInfo> {
             key = bytes[1] & 0xff;
             if (key == 0x10) {
                 //参数信息定位包
-                deviceInfoMhz = getDeviceInfoMHZ(bytes[2] & 0xff);
+                deviceInfoMhz = getAdvChannel(bytes[2] & 0xff);
                 deviceInfoTxPower = getDbm(bytes[2] & 0xff);
                 deviceInfoAdvInterval = getAdInterval(bytes[4] & 0xff);
                 //报警状态
@@ -150,7 +136,8 @@ public class AdvInfoAnalysisImpl implements DeviceInfoAnalysis<AdvInfo> {
                 int bit7 = (batterInfo >> 7 & 0x01) == 1 ? 1 : 0;
                 batterPercent = Integer.parseInt("" + bit7 + bit6 + bit5 + bit4, 2);
             } else if (key == 0x1C) {
-                temperature = ((bytes[2]) + 200) / 10.0;
+                //此处固件已做计算，app端直接取就好
+                temperature = bytes[2];
                 String countHigh = MokoUtils.byte2HexString(bytes[3]);
                 String countLow = MokoUtils.byte2HexString(bytes[4]);
                 alarmCount = Integer.parseInt(countHigh + countLow, 16);

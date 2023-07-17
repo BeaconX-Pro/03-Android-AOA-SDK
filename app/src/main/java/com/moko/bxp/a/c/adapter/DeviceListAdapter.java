@@ -1,5 +1,6 @@
 package com.moko.bxp.a.c.adapter;
 
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -47,13 +48,12 @@ public class DeviceListAdapter extends BaseQuickAdapter<AdvInfo, BaseViewHolder>
             TextView tvAlarmStatus = view.findViewById(R.id.tvAlarmStatus);
             TextView tvAlarmCount = view.findViewById(R.id.tvAlarmCount);
             TextView tvTemp = view.findViewById(R.id.tvTemp);
-            tvAdvChannel.setText(item.deviceInfoMhz);
-            if (item.deviceInfoAdvInterval != -1)
-                tvAdvInterval.setText(item.deviceInfoAdvInterval + "ms");
-            tvTxPower.setText(item.deviceInfoTxPower);
-            tvAlarmStatus.setText(item.alarmStatus);
-            if (item.alarmCount != -1) tvAlarmCount.setText(String.valueOf(item.alarmCount));
-            if (item.temperature != -1) tvTemp.setText(item.temperature + "℃");
+            tvAdvChannel.setText(TextUtils.isEmpty(item.deviceInfoMhz) ? "N/A" : item.deviceInfoMhz);
+            tvAdvInterval.setText(item.deviceInfoAdvInterval != -1 ? (item.deviceInfoAdvInterval + "ms") : "N/A");
+            tvTxPower.setText(TextUtils.isEmpty(item.deviceInfoTxPower) ? "N/A" : item.deviceInfoTxPower);
+            tvAlarmStatus.setText(TextUtils.isEmpty(item.alarmStatus) ? "N/A" : item.alarmStatus);
+            tvAlarmCount.setText(item.alarmCount != -1 ? String.valueOf(item.alarmCount) : "N/A");
+            tvTemp.setText(item.temperature != -1 ? (item.temperature + "℃") : "N/A");
             parent.addView(view);
         }
     }

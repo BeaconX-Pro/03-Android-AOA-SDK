@@ -55,6 +55,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class AOACMainActivity extends BaseActivity implements MokoScanDeviceCallback, BaseQuickAdapter.OnItemChildClickListener {
@@ -154,7 +155,11 @@ public class AOACMainActivity extends BaseActivity implements MokoScanDeviceCall
                 if (isPasswordError) {
                     isPasswordError = false;
                 } else {
-                    ToastUtils.showToast(AOACMainActivity.this, "Connection failed");
+                    if (disconnectType == 1){
+                        disconnectType = 0;
+                    }else {
+                        ToastUtils.showToast(this, "Connection failed");
+                    }
                 }
                 if (null == animation) startScan();
             }
@@ -209,6 +214,7 @@ public class AOACMainActivity extends BaseActivity implements MokoScanDeviceCall
                             if (enable == 1) {
                                 // 开启验证
                                 enablePwd = true;
+                                //开启密码验证的监听
                                 showPasswordDialog();
                             } else {
                                 enablePwd = false;
@@ -220,8 +226,27 @@ public class AOACMainActivity extends BaseActivity implements MokoScanDeviceCall
                     }
                 }
             }
+        } else if (MokoConstants.ACTION_CURRENT_DATA.equals(action)) {
+            //监听密码连接超时
+            OrderTaskResponse response = event.getResponse();
+            OrderCHAR orderCHAR = (OrderCHAR) response.orderCHAR;
+            byte[] value = response.responseValue;
+            if (orderCHAR == OrderCHAR.CHAR_DISCONNECT) {
+                if (null != value && value.length == 5) {
+                    disconnectType = value[4] & 0xff;
+                    if (disconnectType == 1) {
+                        //密码验证超时
+                        XLog.i("333333*******************type="+disconnectType);
+                        if (null != dialog && dialog.isAdded() && dialog.isVisible())
+                            dialog.dismiss();
+                        ToastUtils.showToast(this, "Password entry timed out！");
+                    }
+                }
+            }
         }
     }
+
+    private int disconnectType;
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onRefresh(String flag) {
@@ -286,7 +311,7 @@ public class AOACMainActivity extends BaseActivity implements MokoScanDeviceCall
                         iterator.remove();
                     } else if (!TextUtils.isEmpty(filterMac) && advInfo.mac.toLowerCase().replaceAll(":", "").contains(filterMac.toLowerCase())) {
                         continue;
-                    } else {
+                    } else if (!TextUtils.isEmpty(filterMac) && !advInfo.mac.toLowerCase().replaceAll(":", "").contains(filterMac.toLowerCase(Locale.ROOT))) {
                         iterator.remove();
                     }
                 } else {
@@ -379,9 +404,11 @@ public class AOACMainActivity extends BaseActivity implements MokoScanDeviceCall
         }
     }
 
+    private PasswordDialog dialog;
+
     private void showPasswordDialog() {
         // show password
-        final PasswordDialog dialog = new PasswordDialog();
+        dialog = new PasswordDialog();
         dialog.setPassword(mSavedPassword);
         dialog.setOnPasswordClicked(new PasswordDialog.PasswordClickListener() {
             @Override
@@ -398,6 +425,7 @@ public class AOACMainActivity extends BaseActivity implements MokoScanDeviceCall
 
             @Override
             public void onDismiss() {
+                AOAMokoSupport.getInstance().disConnectBle();
                 startScan();
             }
         });

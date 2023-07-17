@@ -92,7 +92,7 @@
             android:layout_width="wrap_content"
             android:layout_height="35dp"
             android:gravity="center"
-            android:hint="0-65535"
+            android:hint="1-65535"
             android:minWidth="110dp"
             android:inputType="number"
             android:maxLength="5"

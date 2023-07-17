@@ -265,7 +265,8 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/iv_trigger"
                 android:layout_marginTop="10dp"
-                android:visibility="gone" />
+                android:visibility="gone"
+                tools:visibility="visible" />
         </RelativeLayout>
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

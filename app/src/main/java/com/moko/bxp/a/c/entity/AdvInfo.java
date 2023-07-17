@@ -18,7 +18,7 @@ public class AdvInfo implements Serializable {
     public String deviceInfoMhz;
     public String deviceInfoTxPower;
     public int deviceInfoAdvInterval;
-    public double temperature;
+    public int temperature;
     public int alarmCount;
     public String alarmStatus;
     public int advType;
