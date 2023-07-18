@@ -16,51 +16,45 @@ import com.moko.support.d.task.PasswordTask;
 public class OrderTaskAssembler {
 
     /**
-     * @Description 获取制造商
+     * 获取制造商
      */
     public static OrderTask getManufacturer() {
-        GetManufacturerNameTask task = new GetManufacturerNameTask();
-        return task;
+        return new GetManufacturerNameTask();
     }
 
     /**
-     * @Description 获取设备型号
+     * 获取设备型号
      */
     public static OrderTask getDeviceModel() {
-        GetModelNumberTask task = new GetModelNumberTask();
-        return task;
+        return new GetModelNumberTask();
     }
 
     /**
-     * @Description 获取生产日期
+     * 获取生产日期
      */
     public static OrderTask getProductDate() {
-        GetSerialNumberTask task = new GetSerialNumberTask();
-        return task;
+        return new GetSerialNumberTask();
     }
 
     /**
-     * @Description 获取硬件版本
+     * 获取硬件版本
      */
     public static OrderTask getHardwareVersion() {
-        GetHardwareRevisionTask task = new GetHardwareRevisionTask();
-        return task;
+        return new GetHardwareRevisionTask();
     }
 
     /**
-     * @Description 获取固件版本
+     * 获取固件版本
      */
     public static OrderTask getFirmwareVersion() {
-        GetFirmwareRevisionTask task = new GetFirmwareRevisionTask();
-        return task;
+        return new GetFirmwareRevisionTask();
     }
 
     /**
-     * @Description 获取软件版本
+     * 获取软件版本
      */
     public static OrderTask getSoftwareVersion() {
-        GetSoftwareRevisionTask task = new GetSoftwareRevisionTask();
-        return task;
+        return new GetSoftwareRevisionTask();
     }
 
 
