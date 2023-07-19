@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 
+import com.elvishew.xlog.XLog;
 import com.moko.ble.lib.MokoConstants;
 import com.moko.ble.lib.event.ConnectStatusEvent;
 import com.moko.ble.lib.event.OrderTaskResponseEvent;
@@ -122,14 +123,15 @@ public class AccDataActivity extends BaseActivity {
                 byte[] value = response.responseValue;
                 if (orderCHAR == OrderCHAR.CHAR_ACC) {
                     if (value.length > 9) {
-                        mBind.tvXData.setText(String.format("X-axis:%dmg", MokoUtils.toIntSigned(Arrays.copyOfRange(value, 4, 6))));
-                        mBind.tvYData.setText(String.format("Y-axis:%dmg", MokoUtils.toIntSigned(Arrays.copyOfRange(value, 6, 8))));
-                        mBind.tvZData.setText(String.format("Z-axis:%dmg", MokoUtils.toIntSigned(Arrays.copyOfRange(value, 8, 10))));
+                        mBind.tvXData.setText(String.format("X-axis:%dmg", value[5] * 16));
+                        mBind.tvYData.setText(String.format("Y-axis:%dmg", value[7] * 16));
+                        mBind.tvZData.setText(String.format("Z-axis:%dmg", value[9] * 16));
                     }
                 }
             }
         });
     }
+
 
     private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
         @Override
