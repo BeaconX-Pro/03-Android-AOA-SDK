@@ -55,6 +55,7 @@ public class PowerSavingConfigActivity extends BaseActivity {
                 mBind.tvStaticTriggerTimeTips.setText(getString(R.string.static_trigger_time_tips, triggerTime));
             }
         });
+        mBind.tvStaticTriggerTimeTips.setText(getString(R.string.static_trigger_time_tips, ""));
         if (!AOAMokoSupport.getInstance().isBluetoothOpen()) {
             // 蓝牙未打开，开启蓝牙
             AOAMokoSupport.getInstance().enableBluetooth();

@@ -136,7 +136,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="30dp"
             android:lineSpacingMultiplier="1.2"
-            android:text="@string/rssi_filter_tips"
+            android:text="RSSI filtering is the highest priority filtering condition. MAC Address filtering must first meet the RSSI filtering condition"
             android:textColor="@color/black_333333"
             android:textSize="12sp"
             app:layout_constraintLeft_toLeftOf="parent"
