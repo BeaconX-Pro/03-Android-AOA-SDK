@@ -27,7 +27,7 @@
                 android:drawableLeft="@drawable/base_params"
                 android:drawablePadding="10dp"
                 android:gravity="center"
-                android:text="Parameters"
+                android:text="Adv parameters"
                 android:textColor="@color/black_333333"
                 android:textSize="16sp"
                 android:textStyle="bold" />
