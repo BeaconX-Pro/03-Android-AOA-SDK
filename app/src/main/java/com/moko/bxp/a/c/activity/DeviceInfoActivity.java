@@ -36,11 +36,15 @@ import com.moko.bxp.a.c.dialog.ModifyPasswordDialog;
 import com.moko.bxp.a.c.fragment.AdvertisementFragment;
 import com.moko.bxp.a.c.fragment.DeviceFragment;
 import com.moko.bxp.a.c.fragment.SettingFragment;
-import com.moko.bxp.a.c.service.DfuService;
+import com.moko.bxp.a.c.service.DfuServiceAoA;
 import com.moko.bxp.a.c.utils.FileUtils;
 import com.moko.bxp.a.c.utils.ToastUtils;
 import com.moko.support.d.AOAMokoSupport;
 import com.moko.support.d.OrderTaskAssembler;
+import com.moko.support.d.dfu.DfuProgressListener;
+import com.moko.support.d.dfu.DfuProgressListenerAdapter;
+import com.moko.support.d.dfu.DfuServiceInitiator;
+import com.moko.support.d.dfu.DfuServiceListenerHelper;
 import com.moko.support.d.entity.OrderCHAR;
 import com.moko.support.d.entity.ParamsKeyEnum;
 
@@ -52,11 +56,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import no.nordicsemi.android.dfu.DfuProgressListener;
-import no.nordicsemi.android.dfu.DfuProgressListenerAdapter;
-import no.nordicsemi.android.dfu.DfuServiceInitiator;
-import no.nordicsemi.android.dfu.DfuServiceListenerHelper;
 
 public class DeviceInfoActivity extends BaseActivity implements RadioGroup.OnCheckedChangeListener {
     public static final int REQUEST_CODE_SELECT_FIRMWARE = 0x10;
@@ -376,7 +375,7 @@ public class DeviceInfoActivity extends BaseActivity implements RadioGroup.OnChe
                             .setKeepBond(false)
                             .setDisableNotification(true);
                     starter.setZip(null, firmwareFilePath);
-                    starter.start(this, DfuService.class);
+                    starter.start(this, DfuServiceAoA.class);
                     showDFUProgressDialog("Waiting...");
                 } else {
                     Toast.makeText(this, "file is not exists!", Toast.LENGTH_SHORT).show();
@@ -612,7 +611,6 @@ public class DeviceInfoActivity extends BaseActivity implements RadioGroup.OnChe
         super.onResume();
         DfuServiceListenerHelper.registerProgressListener(this, mDfuProgressListener);
     }
-
     @Override
     protected void onPause() {
         super.onPause();
@@ -632,8 +630,8 @@ public class DeviceInfoActivity extends BaseActivity implements RadioGroup.OnChe
                 ToastUtils.showToast(DeviceInfoActivity.this, "Error:DFU Failed");
                 AOAMokoSupport.getInstance().disConnectBle();
                 final LocalBroadcastManager manager = LocalBroadcastManager.getInstance(DeviceInfoActivity.this);
-                final Intent abortAction = new Intent(DfuService.BROADCAST_ACTION);
-                abortAction.putExtra(DfuService.EXTRA_ACTION, DfuService.ACTION_ABORT);
+                final Intent abortAction = new Intent(DfuServiceAoA.BROADCAST_ACTION);
+                abortAction.putExtra(DfuServiceAoA.EXTRA_ACTION, DfuServiceAoA.ACTION_ABORT);
                 manager.sendBroadcast(abortAction);
             }
         }

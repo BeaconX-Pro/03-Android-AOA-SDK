@@ -55,7 +55,7 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
-        <service android:name="com.moko.bxp.a.c.service.DfuService" />
+        <service android:name="com.moko.bxp.a.c.service.DfuServiceAoA" />
 
     </application>
 

@@ -23,9 +23,9 @@ package com.moko.bxp.a.c.service;
 
 import android.app.Activity;
 
-import no.nordicsemi.android.dfu.DfuBaseService;
+import com.moko.support.d.dfu.DfuBaseService;
 
-public class DfuService extends DfuBaseService {
+public class DfuServiceAoA extends DfuBaseService {
 
     @Override
     protected Class<? extends Activity> getNotificationTarget() {

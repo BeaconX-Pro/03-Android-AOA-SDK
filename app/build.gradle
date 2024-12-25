@@ -5,16 +5,17 @@ if (!isLibrary.toBoolean()) {
 }
 
 android {
-    compileSdkVersion 31
+    compileSdk 34
 
     defaultConfig {
         if (!isLibrary.toBoolean()) {
             applicationId "com.moko.bxp.a.c"
         }
-        minSdkVersion 18
-        targetSdkVersion 31
-        versionCode 2
-        versionName "1.0.1"
+        namespace = "com.moko.bxp.a.c"
+        minSdkVersion 21
+        targetSdkVersion 34
+        versionCode 102
+        versionName "1.0.2"
 
         def formatDate = new Date().format("yyyyMMddHHmm")
         setProperty("archivesBaseName", "BXP_A_C_${versionName}_${formatDate}")
@@ -102,9 +103,8 @@ dependencies {
         implementation project(path: ':mokosupport')
     } else {
         implementation files('libs/mokoSupport.jar')
-        provided files('libs/mokoBleLib.jar')
+        compileOnly files('libs/mokoBleLib.jar')
         implementation 'no.nordicsemi.android.support.v18:scanner:1.6.0'
-        implementation 'no.nordicsemi.android:dfu:0.6.2'
         implementation 'org.greenrobot:eventbus:3.2.0'
         implementation 'com.elvishew:xlog:1.6.1'
         implementation 'no.nordicsemi.android:ble:2.5.1'
