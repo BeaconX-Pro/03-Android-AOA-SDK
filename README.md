@@ -1,4 +1,4 @@
-# BeaconXPro Android SDK Guide（English）
+# BXP-A-C Android SDK Guide（English）
 
 ## Intro
 
@@ -17,33 +17,33 @@ We divide the communications between SDK and devices into three stages: Scanning
 
 ### 1.Scanning stage
 
-**`com.moko.support.d.MokoBleScanner`**
+**`com.moko.support.ac.MokoBleScanner`**
 
 Scanning processing class, support to open scan, close scan and get the raw data of the scanned device.
 
-**`com.moko.support.d.callback.MokoScanDeviceCallback`**
+**`com.moko.support.ac.callback.MokoScanDeviceCallback`**
 
 Scanning callback interface,this interface can be used to obtain the scan status and device data.
 
-**`com.moko.support.d.service.DeviceInfoParseable`**
+**`com.moko.support.ac.service.DeviceInfoParseable`**
 
 Parsed data interface,this interface can parsed the device broadcast frame, get the specific data. the implementation can refer to `BeaconXInfoParseableImpl` in the project,the `DeviceInfo` will be parsed to `BeaconXInfo`.
 
-**`com.moko.bxp.button.d.utils.BeaconXParser`**
+**`com.moko.bxp.a.c.utils.AdvInfoAnalysisImpl`**
 
 Parsed data utils class, use this class to convert `BeaconXInfo.ValidData` to UID, URL, TLM, IBeacon, T&H, 3-Axis.
 
 ### 2.Connection stage
 
-**`com.moko.support.d.AOAMokoSupport`**
+**`com.moko.support.ac.AOAMokoSupport`**
 
 BLE operation core class, extends from `Mokoblelib`.It can connect the device, disconnect the device, send the device connection status, turn on Bluetooth, turn off Bluetooth, judge whether Bluetooth is on or not, receive data from the device and send data to the device, notify the page data update, turn on and off characteristic notification.
 
 ### 3.Communication stage
 
-**`com.moko.support.d.OrderTaskAssembler`**
+**`com.moko.support.ac.OrderTaskAssembler`**
 
-We assemble read data and write data to `OrderTask`, send the task to the device through `DMokoSupport`, and receive the resopnse.
+We assemble read data and write data to `OrderTask`, send the task to the device through `AOADMokoSupport`, and receive the resopnse.
 
 **`com.moko.ble.lib.event.ConnectStatusEvent`**
 
@@ -84,10 +84,10 @@ include ':app', ':mokosupport'
 
 **Initialize**
 
-First of all, you should initialize the DMokoSupport.We recommend putting it in Application.
+First of all, you should initialize the AOADMokoSupport.We recommend putting it in Application.
 
 ```
-DMokoSupport.getInstance().init(getApplicationContext());
+AOAMokoSupport.getInstance().init(getApplicationContext());
 ```
 
 **Scan devices**
@@ -163,7 +163,7 @@ for (BeaconXInfo.ValidData validData : validDatas) {
 Connect to the device in order to do more operations(change parameter, OTA),the only parameter required is the MAC address.
 
 ```
-DMokoSupport.getInstance().connDevice(beaconXInfo.mac);
+AOADMokoSupport.getInstance().connDevice(beaconXInfo.mac);
 ```
 
 You can get the connection status through `ConnectStatusEvent`,remember to register `EventBus`
@@ -186,7 +186,7 @@ public void onConnectStatusEvent(ConnectStatusEvent event) {
 You will find that when connect to device password may need, so ,we need to read the lock state of the device first.
 
 ```
-DMokoSupport.getInstance().sendOrder(OrderTaskAssembler.getLockState());
+AOADMokoSupport.getInstance().sendOrder(OrderTaskAssembler.getLockState());
 
 ```
 
@@ -241,7 +241,7 @@ For example, if you want to get the type of each Slot, please refer to the code 
 
 ```
 // read Slot type
-DMokoSupport.getInstance().sendOrder(derTaskAssembler.getSlotType());
+AOADMokoSupport.getInstance().sendOrder(derTaskAssembler.getSlotType());
 ...
 // get result
 @Subscribe(threadMode = ThreadMode.MAIN)
@@ -275,7 +275,7 @@ orderTasks.add(OrderTaskAssembler.getTrigger());
 orderTasks.add(OrderTaskAssembler.getAdvTxPower());
 orderTasks.add(OrderTaskAssembler.getRadioTxPower());
 orderTasks.add(OrderTaskAssembler.getAdvInterval());
-DMokoSupport.getInstance().sendOrder(orderTasks.toArray(new OrderTask[]{}));
+AOADMokoSupport.getInstance().sendOrder(orderTasks.toArray(new OrderTask[]{}));
 
 ```
 How to parse the returned results, please refer to the code of the sample project and documentation.
@@ -283,14 +283,14 @@ How to parse the returned results, please refer to the code of the sample projec
 The current data of T&H, 3-Axes,storage and light sensor are sent to APP by notification. you need to turn on and off the notification function of characteristic
 
 ```
-DMokoSupport.getInstance().enableTHNotify();
-DMokoSupport.getInstance().disableTHNotify();
-DMokoSupport.getInstance().enableStoreNotify();
-DMokoSupport.getInstance().disableStoreNotify();
-DMokoSupport.getInstance().enableThreeAxisNotify();
-DMokoSupport.getInstance().disableThreeAxisNotify();
-DMokoSupport.getInstance().enableLightSensorNotify();
-DMokoSupport.getInstance().disableLightSensorNotify();
+AOADMokoSupport.getInstance().enableTHNotify();
+AOADMokoSupport.getInstance().disableTHNotify();
+AOADMokoSupport.getInstance().enableStoreNotify();
+AOADMokoSupport.getInstance().disableStoreNotify();
+AOADMokoSupport.getInstance().enableThreeAxisNotify();
+AOADMokoSupport.getInstance().disableThreeAxisNotify();
+AOADMokoSupport.getInstance().enableLightSensorNotify();
+AOADMokoSupport.getInstance().disableLightSensorNotify();
 ```
 
 **OTA**
@@ -329,7 +329,7 @@ ActivityCompat.requestPermissions(this,
 } 
 ```
 
-2.`EventBus` is used in the SDK and can be modified in `DMokoSupport` if you want to use other communication methods.
+2.`EventBus` is used in the SDK and can be modified in `AOADMokoSupport` if you want to use other communication methods.
 
 ```
 @Override

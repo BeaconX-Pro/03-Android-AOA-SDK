@@ -23,24 +23,6 @@ import androidx.core.content.FileProvider;
 
 public class Utils {
 
-
-    public static File getFile(String fileName) {
-        String devicePath = AOACMainActivity.PATH_LOGCAT + File.separator + fileName;
-        File deviceListFile = new File(devicePath);
-        if (!deviceListFile.exists()) {
-            try {
-                File parent = deviceListFile.getParentFile();
-                if (!parent.exists()) {
-                    parent.mkdirs();
-                }
-                deviceListFile.createNewFile();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        return deviceListFile;
-    }
-
     /**
      * @Date 2017/4/6
      * @Author wenzheng.liu
@@ -58,9 +40,9 @@ public class Utils {
                 uri = IOUtils.insertDownloadFile(context, files[0]);
             } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 if (BuildConfig.IS_LIBRARY) {
-                    uri = FileProvider.getUriForFile(context, "com.moko.bxp.button.fileprovider", files[0]);
+                    uri = FileProvider.getUriForFile(context, "com.moko.beaconxpro.fileprovider", files[0]);
                 } else {
-                    uri = FileProvider.getUriForFile(context, "com.moko.bxp.button.d.fileprovider", files[0]);
+                    uri = FileProvider.getUriForFile(context, "com.moko.bxp.a.c.fileprovider", files[0]);
                 }
                 intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             } else {
@@ -70,18 +52,23 @@ public class Utils {
             intent.putExtra(Intent.EXTRA_TEXT, body);
         } else {
             ArrayList<Uri> uris = new ArrayList<>();
-            for (int i = 0; i < files.length; i++) {
+            ArrayList<CharSequence> charSequences = new ArrayList<>();
+            for (File file : files) {
+                Uri fileUri;
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                    Uri fileUri = IOUtils.insertDownloadFile(context, files[i]);
-                    uris.add(fileUri);
+                    fileUri = IOUtils.insertDownloadFile(context, file);
                 } else {
-                    uris.add(Uri.fromFile(files[i]));
+                    if (BuildConfig.IS_LIBRARY) {
+                        fileUri = FileProvider.getUriForFile(context, "com.moko.beaconxpro.fileprovider", file);
+                    } else {
+                        fileUri = FileProvider.getUriForFile(context, "com.moko.bxp.a.c.fileprovider", file);
+                    }
                 }
+                uris.add(fileUri);
+                charSequences.add(body);
             }
             intent = new Intent(Intent.ACTION_SEND_MULTIPLE);
             intent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);
-            ArrayList<CharSequence> charSequences = new ArrayList<>();
-            charSequences.add(body);
             intent.putExtra(Intent.EXTRA_TEXT, charSequences);
         }
         String[] addresses = {address};

@@ -11,28 +11,25 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 
-import com.elvishew.xlog.XLog;
 import com.moko.ble.lib.MokoConstants;
 import com.moko.ble.lib.event.ConnectStatusEvent;
 import com.moko.ble.lib.event.OrderTaskResponseEvent;
 import com.moko.ble.lib.task.OrderTask;
 import com.moko.ble.lib.task.OrderTaskResponse;
-import com.moko.ble.lib.utils.MokoUtils;
 import com.moko.bxp.a.c.R;
 import com.moko.bxp.a.c.databinding.ACActivityAccDataBinding;
 import com.moko.bxp.a.c.dialog.LoadingMessageDialog;
 import com.moko.bxp.a.c.utils.ToastUtils;
-import com.moko.support.d.AOAMokoSupport;
-import com.moko.support.d.OrderTaskAssembler;
-import com.moko.support.d.entity.OrderCHAR;
-import com.moko.support.d.entity.ParamsKeyEnum;
+import com.moko.support.ac.AOAMokoSupport;
+import com.moko.support.ac.OrderTaskAssembler;
+import com.moko.support.ac.entity.OrderCHAR;
+import com.moko.support.ac.entity.ParamsKeyEnum;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class AccDataActivity extends BaseActivity {
     private ACActivityAccDataBinding mBind;

@@ -27,7 +27,7 @@ public class BaseApplication extends Application {
     private static final String TAG = "BXP_A_C";
     private static final String LOG_FILE = "BXP_A_C.txt";
     private static final String LOG_FOLDER = "BXP_A_C";
-    public static String PATH_LOGCAT;
+    private static String PATH_LOGCAT;
 
     @Override
     public void onCreate() {

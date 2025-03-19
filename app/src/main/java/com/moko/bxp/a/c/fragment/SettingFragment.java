@@ -6,10 +6,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.moko.bxp.a.c.databinding.FragmentAoaSettingBinding;
+import com.moko.bxp.a.c.databinding.ACFragmentAoaSettingBinding;
 
 public class SettingFragment extends Fragment {
-    private FragmentAoaSettingBinding mBind;
+    private ACFragmentAoaSettingBinding mBind;
     private boolean showPwd;
 
     public SettingFragment() {
@@ -21,7 +21,7 @@ public class SettingFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        mBind = FragmentAoaSettingBinding.inflate(inflater, container, false);
+        mBind = ACFragmentAoaSettingBinding.inflate(inflater, container, false);
         setPwdShown(showPwd);
         return mBind.getRoot();
     }

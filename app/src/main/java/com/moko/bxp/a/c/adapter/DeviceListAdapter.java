@@ -29,7 +29,7 @@ public class DeviceListAdapter extends BaseQuickAdapter<AdvInfo, BaseViewHolder>
 
         if (item.advType == 1) {
             //产测广播信息帧
-            View view = LayoutInflater.from(mContext).inflate(R.layout.layout_adv_product_test, null);
+            View view = LayoutInflater.from(mContext).inflate(R.layout.a_c_layout_adv_product_test, null);
             TextView tvAdvChannel = view.findViewById(R.id.tvAdvChannel);
             TextView tvAdvInterval = view.findViewById(R.id.tvAdvInterval);
             TextView tvTxPower = view.findViewById(R.id.tvTxPower);
@@ -40,7 +40,7 @@ public class DeviceListAdapter extends BaseQuickAdapter<AdvInfo, BaseViewHolder>
             parent.addView(view);
         }
         if (item.advType == 2) {
-            View view = LayoutInflater.from(mContext).inflate(R.layout.layout_device_info, null);
+            View view = LayoutInflater.from(mContext).inflate(R.layout.a_c_layout_device_info, null);
             helper.setText(R.id.tv_battery, item.batterPercent < 0 ? "N/A" : (item.batterPercent * 10 + "%"));
             TextView tvAdvChannel = view.findViewById(R.id.tvAdvChannel);
             TextView tvAdvInterval = view.findViewById(R.id.tvAdvInterval);

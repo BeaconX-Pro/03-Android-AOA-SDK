@@ -5,9 +5,9 @@ import android.os.SystemClock;
 
 import com.moko.ble.lib.utils.MokoUtils;
 import com.moko.bxp.a.c.entity.AdvInfo;
-import com.moko.support.d.entity.DeviceInfo;
-import com.moko.support.d.entity.OrderServices;
-import com.moko.support.d.service.DeviceInfoAnalysis;
+import com.moko.support.ac.entity.DeviceInfo;
+import com.moko.support.ac.entity.OrderServices;
+import com.moko.support.ac.service.DeviceInfoAnalysis;
 
 import java.util.Arrays;
 import java.util.HashMap;

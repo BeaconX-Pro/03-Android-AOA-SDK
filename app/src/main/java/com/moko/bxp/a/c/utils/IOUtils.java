@@ -27,7 +27,7 @@ import java.util.Locale;
 import androidx.annotation.RequiresApi;
 
 public class IOUtils {
-    public static final String CRASH_FILE = "d_crash_log.txt";
+    public static final String CRASH_FILE = "crash_log.txt";
 
     /**
      * 判断SDCard是否存在 [当没有外挂SD卡时，内置ROM也被识别为存在sd卡]
@@ -224,7 +224,7 @@ public class IOUtils {
         values.put(MediaStore.DownloadColumns.DISPLAY_NAME, file.getName());
         values.put(MediaStore.DownloadColumns.TITLE, file.getName());
         values.put(MediaStore.DownloadColumns.MIME_TYPE, "*/*");
-        values.put(MediaStore.DownloadColumns.RELATIVE_PATH, BuildConfig.IS_LIBRARY ? "Download/MKButton" : "Download/MKButtonD");
+        values.put(MediaStore.DownloadColumns.RELATIVE_PATH, BuildConfig.IS_LIBRARY ? "Download/mokoBeaconXPro" : "Download/BXP_A_C");
         Uri external = MediaStore.Downloads.EXTERNAL_CONTENT_URI;
         Uri uri = null;
         ContentResolver cr = context.getContentResolver();

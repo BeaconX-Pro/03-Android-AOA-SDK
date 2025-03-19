@@ -22,12 +22,6 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.core.content.ContextCompat;
 
 
-/**
- * @Date 2017/12/7 0007
- * @Author wenzheng.liu
- * @Description
- * @ClassPath com.moko.bxp.button.d.activity.GuideActivity
- */
 public class GuideActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {

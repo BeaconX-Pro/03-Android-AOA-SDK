@@ -10,7 +10,7 @@ public class AppConstants {
     public static final String PATTERN_YYYY_MM_DD_HH_MM_SS = "dd/MM/yyyy HH:mm:ss";
     public static final String PATTERN_YYYY_MM_DD_T_HH_MM_SS_Z = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
     // sp
-    public static final String SP_NAME = "sp_name_mk_button_cr";
+    public static final String SP_NAME = "sp_name_mk_a_c";
 
     public static final String SP_KEY_DEVICE_ADDRESS = "sp_key_device_address";
     public static final String SP_KEY_SAVED_PASSWORD = "SP_KEY_SAVED_PASSWORD";

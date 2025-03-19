@@ -12,14 +12,14 @@ import androidx.fragment.app.FragmentActivity;
 
 import com.elvishew.xlog.XLog;
 import com.moko.bxp.a.c.R;
-import com.moko.bxp.a.c.databinding.FragmentAdvertisementBinding;
+import com.moko.bxp.a.c.databinding.ACFragmentAdvertisementBinding;
 import com.moko.bxp.a.c.dialog.BottomDialog;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
 public class AdvertisementFragment extends Fragment implements SeekBar.OnSeekBarChangeListener {
-    private FragmentAdvertisementBinding mBind;
+    private ACFragmentAdvertisementBinding mBind;
     private int mTxPower;
     private int mTriggerTxPower;
     private final String[] advChannelVal = {"2401", "2402", "2426", "2480", "2481"};
@@ -43,7 +43,7 @@ public class AdvertisementFragment extends Fragment implements SeekBar.OnSeekBar
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        mBind = FragmentAdvertisementBinding.inflate(inflater, container, false);
+        mBind = ACFragmentAdvertisementBinding.inflate(inflater, container, false);
         activity = (FragmentActivity) getActivity();
         mBind.sbTxPower.setOnSeekBarChangeListener(this);
         mBind.layoutTrigger.sbTriggerTxPower.setOnSeekBarChangeListener(this);

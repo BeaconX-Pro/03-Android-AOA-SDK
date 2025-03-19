@@ -9,7 +9,7 @@ import android.view.View;
 import com.elvishew.xlog.XLog;
 import com.moko.bxp.a.c.BuildConfig;
 import com.moko.bxp.a.c.R;
-import com.moko.bxp.a.c.databinding.ActivityAboutDBinding;
+import com.moko.bxp.a.c.databinding.ActivityAboutACBinding;
 import com.moko.bxp.a.c.utils.ToastUtils;
 import com.moko.bxp.a.c.utils.Utils;
 
@@ -18,15 +18,16 @@ import java.util.Calendar;
 
 
 public class AboutActivity extends BaseActivity {
-    private ActivityAboutDBinding mBind;
+    private ActivityAboutACBinding mBind;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mBind = ActivityAboutDBinding.inflate(getLayoutInflater());
+        mBind = ActivityAboutACBinding.inflate(getLayoutInflater());
         setContentView(mBind.getRoot());
         if (!BuildConfig.IS_LIBRARY) {
             mBind.appVersion.setText(String.format("Version:V%s", Utils.getVersionInfo(this)));
+            mBind.tvFeedbackLog.setVisibility(View.VISIBLE);
         }
         mBind.tvCompanyWebsite.getPaint().setFlags(Paint.UNDERLINE_TEXT_FLAG);
     }
@@ -47,16 +48,16 @@ public class AboutActivity extends BaseActivity {
     public void onFeedback(View view) {
         if (isWindowLocked())
             return;
-        File trackerLog = new File(AOACMainActivity.PATH_LOGCAT + File.separator + (BuildConfig.IS_LIBRARY ? "mokoBeaconXPro.txt" : "BXP_A_C.txt"));
-        File trackerLogBak = new File(AOACMainActivity.PATH_LOGCAT + File.separator + (BuildConfig.IS_LIBRARY ? "mokoBeaconXPro.txt.bak" : "BXP_A_C.txt.bak"));
-        File trackerCrashLog = new File(AOACMainActivity.PATH_LOGCAT + File.separator + (BuildConfig.IS_LIBRARY ? "crash_log.txt" : "d_crash_log.txt"));
+        File trackerLog = new File(AOACMainActivity.PATH_LOGCAT + File.separator + "BXP_A_C.txt");
+        File trackerLogBak = new File(AOACMainActivity.PATH_LOGCAT + File.separator + "BXP_A_C.txt.bak");
+        File trackerCrashLog = new File(AOACMainActivity.PATH_LOGCAT + File.separator + "crash_log.txt");
         if (!trackerLog.exists() || !trackerLog.canRead()) {
             ToastUtils.showToast(this, "File is not exists!");
             return;
         }
-        XLog.i("333333mail="+trackerLog.getPath());
+        XLog.i("333333mail=" + trackerLog.getPath());
         String address = "Development@mokotechnology.com";
-        StringBuilder mailContent = new StringBuilder("MKButtonD_");
+        StringBuilder mailContent = new StringBuilder("BXP_A_C_");
         Calendar calendar = Calendar.getInstance();
         String date = Utils.calendar2strDate(calendar, "yyyyMMdd");
         mailContent.append(date);

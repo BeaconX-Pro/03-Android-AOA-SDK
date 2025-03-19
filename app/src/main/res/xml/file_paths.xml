@@ -1,4 +1,4 @@
 <paths>
-    <external-path name="log" path="MKButtonD/"/>
+    <external-path name="log" path="BXP_A_C/"/>
     <external-path name="*" path="."/>
 </paths>
