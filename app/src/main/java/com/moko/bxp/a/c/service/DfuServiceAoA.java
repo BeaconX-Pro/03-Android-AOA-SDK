@@ -23,7 +23,8 @@ package com.moko.bxp.a.c.service;
 
 import android.app.Activity;
 
-import com.moko.support.ac.dfu.DfuBaseService;
+import no.nordicsemi.android.dfu.DfuBaseService;
+
 
 public class DfuServiceAoA extends DfuBaseService {
 

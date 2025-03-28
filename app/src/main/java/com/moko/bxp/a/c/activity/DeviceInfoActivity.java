@@ -41,10 +41,10 @@ import com.moko.bxp.a.c.utils.FileUtils;
 import com.moko.bxp.a.c.utils.ToastUtils;
 import com.moko.support.ac.AOAMokoSupport;
 import com.moko.support.ac.OrderTaskAssembler;
-import com.moko.support.ac.dfu.DfuProgressListener;
-import com.moko.support.ac.dfu.DfuProgressListenerAdapter;
-import com.moko.support.ac.dfu.DfuServiceInitiator;
-import com.moko.support.ac.dfu.DfuServiceListenerHelper;
+import no.nordicsemi.android.dfu.DfuProgressListener;
+import no.nordicsemi.android.dfu.DfuProgressListenerAdapter;
+import no.nordicsemi.android.dfu.DfuServiceInitiator;
+import no.nordicsemi.android.dfu.DfuServiceListenerHelper;
 import com.moko.support.ac.entity.OrderCHAR;
 import com.moko.support.ac.entity.ParamsKeyEnum;
 

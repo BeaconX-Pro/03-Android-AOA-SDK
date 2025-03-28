@@ -5,15 +5,12 @@ if (!isLibrary.toBoolean()) {
 }
 
 android {
+    namespace "com.moko.bxp.a.c"
     compileSdk 34
 
     defaultConfig {
-        if (!isLibrary.toBoolean()) {
-            applicationId "com.moko.bxp.a.c"
-        }
-        namespace = "com.moko.bxp.a.c"
-        minSdkVersion 21
-        targetSdkVersion 34
+        minSdk 26
+        targetSdk 34
         versionCode 103
         versionName "1.0.3"
 
@@ -54,7 +51,7 @@ android {
         disable 'SetTextI18n'
         checkReleaseBuilds false
     }
-    
+
     sourceSets {
         main {
             if (!isLibrary.toBoolean()) {
@@ -102,11 +99,6 @@ dependencies {
         implementation project(path: ':mokosupport')
     } else {
         implementation files('libs/mokoSupport.jar')
-        compileOnly files('libs/mokoBleLib.jar')
-        implementation 'no.nordicsemi.android.support.v18:scanner:1.6.0'
-        implementation 'org.greenrobot:eventbus:3.3.1'
-        implementation 'com.elvishew:xlog:1.6.1'
-        implementation 'com.google.code.gson:gson:2.10.1'
-        implementation 'no.nordicsemi.android:ble:2.7.3'
+        compileOnly 'com.github.MOKO-Android-Base-Library:MKBleLib:1.0.0-beacon'
     }
 }
