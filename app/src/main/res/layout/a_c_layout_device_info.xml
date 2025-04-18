@@ -10,7 +10,7 @@
         android:layout_width="10dp"
         android:layout_height="10dp"
         android:layout_marginLeft="10dp"
-        android:src="@drawable/blue_arrows"
+        android:src="@drawable/ic_slot_point"
         app:layout_constraintBottom_toBottomOf="@+id/tvParamsInfo"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="@+id/tvParamsInfo" />

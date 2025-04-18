@@ -18,7 +18,7 @@ import com.moko.ble.lib.task.OrderTask;
 import com.moko.ble.lib.task.OrderTaskResponse;
 import com.moko.bxp.a.c.R;
 import com.moko.bxp.a.c.databinding.ACActivityAccDataBinding;
-import com.moko.bxp.a.c.dialog.LoadingMessageDialog;
+import com.moko.lib.bxpui.dialog.LoadingMessageDialog;
 import com.moko.bxp.a.c.utils.ToastUtils;
 import com.moko.support.ac.AOAMokoSupport;
 import com.moko.support.ac.OrderTaskAssembler;

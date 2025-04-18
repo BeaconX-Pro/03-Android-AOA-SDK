@@ -14,7 +14,7 @@ import com.moko.ble.lib.task.OrderTaskResponse;
 import com.moko.ble.lib.utils.MokoUtils;
 import com.moko.bxp.a.c.R;
 import com.moko.bxp.a.c.databinding.ACActivityPowerSavingConfigBinding;
-import com.moko.bxp.a.c.dialog.LoadingMessageDialog;
+import com.moko.lib.bxpui.dialog.LoadingMessageDialog;
 import com.moko.bxp.a.c.utils.ToastUtils;
 import com.moko.support.ac.AOAMokoSupport;
 import com.moko.support.ac.OrderTaskAssembler;

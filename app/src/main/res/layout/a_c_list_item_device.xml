@@ -33,7 +33,7 @@
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_marginTop="5dp"
-            android:drawableTop="@drawable/rssi"
+            android:drawableTop="@drawable/ic_rssi"
             android:drawablePadding="2dp"
             android:text="-80"
             android:textColor="@color/grey_666666" />
@@ -61,7 +61,7 @@
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/battery_1" />
+            android:src="@drawable/ic_battery" />
 
         <TextView
             android:id="@+id/tv_battery"

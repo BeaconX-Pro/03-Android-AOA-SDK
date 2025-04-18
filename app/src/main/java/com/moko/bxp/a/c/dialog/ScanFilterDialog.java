@@ -5,6 +5,7 @@ import android.text.TextUtils;
 import android.widget.SeekBar;
 
 import com.moko.bxp.a.c.databinding.DialogScanFilterACBinding;
+import com.moko.lib.bxpui.dialog.BaseDialog;
 
 public class ScanFilterDialog extends BaseDialog<DialogScanFilterACBinding> {
     private int filterRssi;

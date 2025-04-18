@@ -13,7 +13,7 @@ import androidx.fragment.app.FragmentActivity;
 import com.elvishew.xlog.XLog;
 import com.moko.bxp.a.c.R;
 import com.moko.bxp.a.c.databinding.ACFragmentAdvertisementBinding;
-import com.moko.bxp.a.c.dialog.BottomDialog;
+import com.moko.lib.bxpui.dialog.BottomDialog;
 
 import java.util.ArrayList;
 import java.util.Arrays;

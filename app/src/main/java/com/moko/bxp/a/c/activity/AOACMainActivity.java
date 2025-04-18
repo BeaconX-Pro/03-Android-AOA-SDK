@@ -15,10 +15,6 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 
-import androidx.core.content.ContextCompat;
-import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.LinearLayoutManager;
-
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.elvishew.xlog.XLog;
 import com.moko.ble.lib.MokoConstants;
@@ -30,15 +26,15 @@ import com.moko.bxp.a.c.BuildConfig;
 import com.moko.bxp.a.c.R;
 import com.moko.bxp.a.c.adapter.DeviceListAdapter;
 import com.moko.bxp.a.c.databinding.ACActivityMainBinding;
-import com.moko.bxp.a.c.dialog.AlertMessageDialog;
-import com.moko.bxp.a.c.dialog.LoadingDialog;
-import com.moko.bxp.a.c.dialog.LoadingMessageDialog;
-import com.moko.bxp.a.c.dialog.PasswordDialog;
 import com.moko.bxp.a.c.dialog.ScanFilterDialog;
 import com.moko.bxp.a.c.entity.AdvInfo;
 import com.moko.bxp.a.c.utils.AdvInfoAnalysisImpl;
 import com.moko.bxp.a.c.utils.SPUtiles;
 import com.moko.bxp.a.c.utils.ToastUtils;
+import com.moko.lib.bxpui.dialog.AlertMessageDialog;
+import com.moko.lib.bxpui.dialog.LoadingDialog;
+import com.moko.lib.bxpui.dialog.LoadingMessageDialog;
+import com.moko.lib.bxpui.dialog.PasswordDialog;
 import com.moko.support.ac.AOAMokoSupport;
 import com.moko.support.ac.MokoBleScanner;
 import com.moko.support.ac.OrderTaskAssembler;
@@ -57,6 +53,10 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.concurrent.ConcurrentHashMap;
+
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 public class AOACMainActivity extends BaseActivity implements MokoScanDeviceCallback, BaseQuickAdapter.OnItemChildClickListener {
     private ACActivityMainBinding mBind;
@@ -155,9 +155,9 @@ public class AOACMainActivity extends BaseActivity implements MokoScanDeviceCall
                 if (isPasswordError) {
                     isPasswordError = false;
                 } else {
-                    if (disconnectType == 1){
+                    if (disconnectType == 1) {
                         disconnectType = 0;
-                    }else {
+                    } else {
                         ToastUtils.showToast(this, "Connection failed");
                     }
                 }
@@ -236,7 +236,7 @@ public class AOACMainActivity extends BaseActivity implements MokoScanDeviceCall
                     disconnectType = value[4] & 0xff;
                     if (disconnectType == 1) {
                         //密码验证超时
-                        XLog.i("333333*******************type="+disconnectType);
+                        XLog.i("333333*******************type=" + disconnectType);
                         if (null != dialog && dialog.isAdded() && dialog.isVisible())
                             dialog.dismiss();
                         ToastUtils.showToast(this, "Password entry timed out！");
