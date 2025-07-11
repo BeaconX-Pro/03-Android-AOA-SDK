@@ -1,11 +1,11 @@
 package com.moko.support.ac.task;
 
-import androidx.annotation.IntRange;
-
 import com.moko.ble.lib.task.OrderTask;
 import com.moko.ble.lib.utils.MokoUtils;
 import com.moko.support.ac.entity.OrderCHAR;
 import com.moko.support.ac.entity.ParamsKeyEnum;
+
+import androidx.annotation.IntRange;
 
 
 public class ParamsTask extends OrderTask {

@@ -2,11 +2,11 @@ apply plugin: 'com.android.library'
 
 android {
     namespace "com.moko.support.ac"
-    compileSdk 34
+    compileSdk 35
 
     defaultConfig {
-        minSdk 26
-        targetSdk 34
+        minSdk 28
+        targetSdk 35
         versionCode 3
         versionName "3.0"
     }

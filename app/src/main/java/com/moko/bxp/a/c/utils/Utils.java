@@ -9,10 +9,8 @@ import android.net.Uri;
 import android.os.Build;
 
 import com.moko.bxp.a.c.BuildConfig;
-import com.moko.bxp.a.c.activity.AOACMainActivity;
 
 import java.io.File;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;

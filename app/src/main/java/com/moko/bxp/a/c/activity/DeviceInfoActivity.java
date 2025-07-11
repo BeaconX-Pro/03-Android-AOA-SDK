@@ -16,10 +16,6 @@ import android.view.Window;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
-import androidx.annotation.IdRes;
-import androidx.annotation.NonNull;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-
 import com.elvishew.xlog.XLog;
 import com.moko.ble.lib.MokoConstants;
 import com.moko.ble.lib.event.ConnectStatusEvent;
@@ -30,21 +26,17 @@ import com.moko.ble.lib.utils.MokoUtils;
 import com.moko.bxp.a.c.AppConstants;
 import com.moko.bxp.a.c.R;
 import com.moko.bxp.a.c.databinding.ACActivityDeviceInfoBinding;
-import com.moko.lib.bxpui.dialog.AlertMessageDialog;
-import com.moko.lib.bxpui.dialog.LoadingMessageDialog;
-import com.moko.lib.bxpui.dialog.ModifyPasswordDialog;
 import com.moko.bxp.a.c.fragment.AdvertisementFragment;
 import com.moko.bxp.a.c.fragment.DeviceFragment;
 import com.moko.bxp.a.c.fragment.SettingFragment;
 import com.moko.bxp.a.c.service.DfuServiceAoA;
 import com.moko.bxp.a.c.utils.FileUtils;
 import com.moko.bxp.a.c.utils.ToastUtils;
+import com.moko.lib.bxpui.dialog.AlertMessageDialog;
+import com.moko.lib.bxpui.dialog.LoadingMessageDialog;
+import com.moko.lib.bxpui.dialog.ModifyPasswordDialog;
 import com.moko.support.ac.AOAMokoSupport;
 import com.moko.support.ac.OrderTaskAssembler;
-import no.nordicsemi.android.dfu.DfuProgressListener;
-import no.nordicsemi.android.dfu.DfuProgressListenerAdapter;
-import no.nordicsemi.android.dfu.DfuServiceInitiator;
-import no.nordicsemi.android.dfu.DfuServiceListenerHelper;
 import com.moko.support.ac.entity.OrderCHAR;
 import com.moko.support.ac.entity.ParamsKeyEnum;
 
@@ -56,6 +48,14 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import androidx.annotation.IdRes;
+import androidx.annotation.NonNull;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import no.nordicsemi.android.dfu.DfuProgressListener;
+import no.nordicsemi.android.dfu.DfuProgressListenerAdapter;
+import no.nordicsemi.android.dfu.DfuServiceInitiator;
+import no.nordicsemi.android.dfu.DfuServiceListenerHelper;
 
 public class DeviceInfoActivity extends BaseActivity implements RadioGroup.OnCheckedChangeListener {
     public static final int REQUEST_CODE_SELECT_FIRMWARE = 0x10;
