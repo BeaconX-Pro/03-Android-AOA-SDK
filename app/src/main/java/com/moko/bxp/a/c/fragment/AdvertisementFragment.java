@@ -1,6 +1,5 @@
 package com.moko.bxp.a.c.fragment;
 
-import android.app.Fragment;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -8,15 +7,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.SeekBar;
 
-import com.elvishew.xlog.XLog;
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+
 import com.moko.bxp.a.c.R;
 import com.moko.bxp.a.c.databinding.ACFragmentAdvertisementBinding;
 import com.moko.lib.bxpui.dialog.BottomDialog;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-
-import androidx.fragment.app.FragmentActivity;
+import java.util.Locale;
 
 public class AdvertisementFragment extends Fragment implements SeekBar.OnSeekBarChangeListener {
     private ACFragmentAdvertisementBinding mBind;
@@ -42,9 +43,9 @@ public class AdvertisementFragment extends Fragment implements SeekBar.OnSeekBar
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mBind = ACFragmentAdvertisementBinding.inflate(inflater, container, false);
-        activity = (FragmentActivity) getActivity();
+        activity = getActivity();
         mBind.sbTxPower.setOnSeekBarChangeListener(this);
         mBind.layoutTrigger.sbTriggerTxPower.setOnSeekBarChangeListener(this);
         mBind.ivTrigger.setOnClickListener(v -> {
@@ -205,9 +206,8 @@ public class AdvertisementFragment extends Fragment implements SeekBar.OnSeekBar
     }
 
     public void updateAdvTxPower(int progress) {
-        XLog.i("333333**********pro" + progress);
         mBind.sbTxPower.setProgress(getProgress(progress));
-        mBind.tvTxPower.setText(String.format("%ddBm", progress));
+        mBind.tvTxPower.setText(String.format(Locale.getDefault(),"%ddBm", progress));
         mTxPower = progress;
     }
 
@@ -224,7 +224,7 @@ public class AdvertisementFragment extends Fragment implements SeekBar.OnSeekBar
 
     public void updateTriggerAdvTxPower(int progress) {
         mBind.layoutTrigger.sbTriggerTxPower.setProgress(getProgress(progress));
-        mBind.layoutTrigger.tvTriggerTxPower.setText(String.format("%ddBm", progress));
+        mBind.layoutTrigger.tvTriggerTxPower.setText(String.format(Locale.getDefault(),"%ddBm", progress));
         mTriggerTxPower = progress;
     }
 
@@ -258,10 +258,10 @@ public class AdvertisementFragment extends Fragment implements SeekBar.OnSeekBar
     @Override
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
         if (seekBar.getId() == R.id.sb_tx_power) {
-            mBind.tvTxPower.setText(String.format("%ddBm", txPowerArray[progress]));
+            mBind.tvTxPower.setText(String.format(Locale.getDefault(),"%ddBm", txPowerArray[progress]));
             mTxPower = txPowerArray[progress];
         } else if (seekBar.getId() == R.id.sb_trigger_tx_power) {
-            mBind.layoutTrigger.tvTriggerTxPower.setText(String.format("%ddBm", txPowerArray[progress]));
+            mBind.layoutTrigger.tvTriggerTxPower.setText(String.format(Locale.getDefault(),"%ddBm", txPowerArray[progress]));
             mTriggerTxPower = txPowerArray[progress];
         }
     }

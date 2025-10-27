@@ -1,6 +1,5 @@
 package com.moko.bxp.a.c.activity;
 
-import android.app.FragmentManager;
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.content.ActivityNotFoundException;
@@ -51,7 +50,9 @@ import java.util.List;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentManager;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
 import no.nordicsemi.android.dfu.DfuProgressListener;
 import no.nordicsemi.android.dfu.DfuProgressListenerAdapter;
 import no.nordicsemi.android.dfu.DfuServiceInitiator;
@@ -59,7 +60,6 @@ import no.nordicsemi.android.dfu.DfuServiceListenerHelper;
 
 public class DeviceInfoActivity extends BaseActivity implements RadioGroup.OnCheckedChangeListener {
     public static final int REQUEST_CODE_SELECT_FIRMWARE = 0x10;
-
     private ACActivityDeviceInfoBinding mBind;
     private FragmentManager fragmentManager;
     private AdvertisementFragment alarmFragment;
@@ -71,13 +71,14 @@ public class DeviceInfoActivity extends BaseActivity implements RadioGroup.OnChe
     private int mDisconnectType;
     public boolean isAdvParamsSuc;
     private boolean isModifyPassword;
+    private int version;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mBind = ACActivityDeviceInfoBinding.inflate(getLayoutInflater());
         setContentView(mBind.getRoot());
-        fragmentManager = getFragmentManager();
+        fragmentManager = getSupportFragmentManager();
         initFragment();
         mBind.rgOptions.setOnCheckedChangeListener(this);
         EventBus.getDefault().register(this);
@@ -91,14 +92,13 @@ public class DeviceInfoActivity extends BaseActivity implements RadioGroup.OnChe
             AOAMokoSupport.getInstance().enableBluetooth();
         }
         showSyncingProgressDialog();
-        mBind.tvTitle.postDelayed(() -> {
-            List<OrderTask> orderTasks = new ArrayList<>(4);
-            orderTasks.add(OrderTaskAssembler.getNormalAdvParams());
-            orderTasks.add(OrderTaskAssembler.getButtonTriggerParams());
-            orderTasks.add(OrderTaskAssembler.getSensorType());
-            orderTasks.add(OrderTaskAssembler.getDeviceMac());
-            AOAMokoSupport.getInstance().sendOrder(orderTasks.toArray(new OrderTask[0]));
-        }, 500);
+        List<OrderTask> orderTasks = new ArrayList<>(5);
+        orderTasks.add(OrderTaskAssembler.getFirmwareVersion());
+        orderTasks.add(OrderTaskAssembler.getNormalAdvParams());
+        orderTasks.add(OrderTaskAssembler.getButtonTriggerParams());
+        orderTasks.add(OrderTaskAssembler.getSensorType());
+        orderTasks.add(OrderTaskAssembler.getDeviceMac());
+        AOAMokoSupport.getInstance().sendOrder(orderTasks.toArray(new OrderTask[0]));
         boolean enablePwd = getIntent().getBooleanExtra("pwdEnable", false);
         settingFragment.setPwdShown(enablePwd);
     }
@@ -304,7 +304,11 @@ public class DeviceInfoActivity extends BaseActivity implements RadioGroup.OnChe
                         break;
 
                     case CHAR_FIRMWARE_REVISION:
-                        deviceFragment.setFirmwareVersion(new String(value).trim());
+                        if (null != deviceFragment) {
+                            deviceFragment.setFirmwareVersion(new String(value).trim());
+                        }
+                        String versionStr = new String(value);
+                        version = Integer.parseInt(versionStr.replaceAll("\\D", ""));
                         break;
 
                     case CHAR_HARDWARE_REVISION:
@@ -337,7 +341,6 @@ public class DeviceInfoActivity extends BaseActivity implements RadioGroup.OnChe
     }
 
     private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
-
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent != null) {
@@ -552,6 +555,7 @@ public class DeviceInfoActivity extends BaseActivity implements RadioGroup.OnChe
     public void onPowerSavingConfig(View view) {
         if (isWindowLocked()) return;
         Intent intent = new Intent(this, PowerSavingConfigActivity.class);
+        intent.putExtra("version", version);
         startActivity(intent);
     }
 
@@ -611,6 +615,7 @@ public class DeviceInfoActivity extends BaseActivity implements RadioGroup.OnChe
         super.onResume();
         DfuServiceListenerHelper.registerProgressListener(this, mDfuProgressListener);
     }
+
     @Override
     protected void onPause() {
         super.onPause();

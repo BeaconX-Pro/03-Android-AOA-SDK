@@ -10,6 +10,7 @@ android {
         versionCode 3
         versionName "3.0"
     }
+    android.buildFeatures.buildConfig = true
     buildTypes {
         release {
             minifyEnabled false
@@ -33,7 +34,7 @@ dependencies {
 }
 
 //修改jar名字+将指定jar生成的地方
-task makeJar(type: Copy) {
+tasks.register('makeJar', Copy) {
     //如果之前存在，则先删除
     delete 'build/libs/mokoSupport.jar'
     //设置拷贝的文件

@@ -64,7 +64,27 @@ public class ParamsTask extends OrderTask {
         response.responseValue = data;
     }
 
-    ///////////////////////////////////////
+    public void setPowerSavingAdvParams(int advInterval, int txPower, int advDuration, int standbyDuration, int advEnable) {
+        byte[] intervalBytes = MokoUtils.toByteArray(advInterval, 2);
+        byte[] durationBytes = MokoUtils.toByteArray(advDuration, 2);
+        byte[] standbyBytes = MokoUtils.toByteArray(standbyDuration, 2);
+        response.responseValue = data = new byte[]{
+                (byte) 0xEA,
+                0x01,
+                (byte) ParamsKeyEnum.KEY_POWER_SAVING_ADV_PARAMS.getParamsKey(),
+                0x08,
+                intervalBytes[0],
+                intervalBytes[1],
+                (byte) txPower,
+                durationBytes[0],
+                durationBytes[1],
+                standbyBytes[0],
+                standbyBytes[1],
+                (byte) advEnable
+        };
+    }
+
+    /// ////////////////////////////////////
     public void setNormalAdvParams(int advInterval, int txPower, int advDuration, int standByDuration, int advChannel) {
         byte[] advIntervalBytes = MokoUtils.toByteArray(advInterval, 2);
         byte[] advDurationBytes = MokoUtils.toByteArray(advDuration, 2);

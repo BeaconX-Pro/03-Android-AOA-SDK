@@ -102,6 +102,18 @@ public class OrderTaskAssembler {
         return task;
     }
 
+    public static OrderTask setPowerSavingAdvParams(int advInterval, int txPower, int advDuration, int standbyDuration, int advEnable) {
+        ParamsTask task = new ParamsTask();
+        task.setPowerSavingAdvParams(advInterval, txPower, advDuration, standbyDuration, advEnable);
+        return task;
+    }
+
+    public static OrderTask getPowerSavingAdvParams(){
+        ParamsTask task = new ParamsTask();
+        task.getData(ParamsKeyEnum.KEY_POWER_SAVING_ADV_PARAMS);
+        return task;
+    }
+
     public static OrderTask getSensorType() {
         ParamsTask task = new ParamsTask();
         task.getData(ParamsKeyEnum.KEY_SENSOR_TYPE);

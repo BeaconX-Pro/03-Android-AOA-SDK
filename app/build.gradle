@@ -17,6 +17,7 @@ android {
         def formatDate = new Date().format("yyyyMMddHHmm")
         setProperty("archivesBaseName", "BXP_A_C_${versionName}_${formatDate}")
     }
+    android.buildFeatures.buildConfig = true
 
     buildTypes {
         release {
