@@ -3,7 +3,6 @@ package com.moko.bxp.a.c.activity;
 import android.content.Intent;
 import android.graphics.Paint;
 import android.net.Uri;
-import android.os.Bundle;
 import android.view.View;
 
 import com.elvishew.xlog.XLog;
@@ -16,15 +15,9 @@ import com.moko.bxp.a.c.utils.Utils;
 import java.io.File;
 import java.util.Calendar;
 
-
-public class AboutActivity extends BaseActivity {
-    private ActivityAboutACBinding mBind;
-
+public class AboutActivity extends BaseActivity<ActivityAboutACBinding> {
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        mBind = ActivityAboutACBinding.inflate(getLayoutInflater());
-        setContentView(mBind.getRoot());
+    protected void onCreate() {
         if (!BuildConfig.IS_LIBRARY) {
             mBind.appVersion.setText(String.format("Version:V%s", Utils.getVersionInfo(this)));
             mBind.tvFeedbackLog.setVisibility(View.VISIBLE);
@@ -32,14 +25,22 @@ public class AboutActivity extends BaseActivity {
         mBind.tvCompanyWebsite.getPaint().setFlags(Paint.UNDERLINE_TEXT_FLAG);
     }
 
+    @Override
+    protected ActivityAboutACBinding getViewBinding() {
+        return ActivityAboutACBinding.inflate(getLayoutInflater());
+    }
+
+    @Override
+    protected boolean registerEvent() {
+        return false;
+    }
 
     public void onBack(View view) {
         finish();
     }
 
     public void onCompanyWebsite(View view) {
-        if (isWindowLocked())
-            return;
+        if (isWindowLocked()) return;
         Uri uri = Uri.parse("https://" + getString(R.string.company_website));
         Intent intent = new Intent(Intent.ACTION_VIEW, uri);
         startActivity(intent);

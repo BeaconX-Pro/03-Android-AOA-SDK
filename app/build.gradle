@@ -9,10 +9,13 @@ android {
     compileSdk 35
 
     defaultConfig {
+        if (!isLibrary.toBoolean()) {
+            applicationId "com.moko.bxp.a.c"
+        }
         minSdk 28
         targetSdk 35
-        versionCode 104
-        versionName "1.0.4"
+        versionCode 100
+        versionName "1.0.0"
 
         def formatDate = new Date().format("yyyyMMddHHmm")
         setProperty("archivesBaseName", "BXP_A_C_${versionName}_${formatDate}")

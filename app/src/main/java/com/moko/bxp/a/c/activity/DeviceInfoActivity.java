@@ -1,19 +1,19 @@
 package com.moko.bxp.a.c.activity;
 
 import android.app.ProgressDialog;
-import android.bluetooth.BluetoothAdapter;
 import android.content.ActivityNotFoundException;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.net.Uri;
-import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.Window;
 import android.widget.RadioGroup;
 import android.widget.Toast;
+
+import androidx.annotation.IdRes;
+import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentManager;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.elvishew.xlog.XLog;
 import com.moko.ble.lib.MokoConstants;
@@ -32,7 +32,6 @@ import com.moko.bxp.a.c.service.DfuServiceAoA;
 import com.moko.bxp.a.c.utils.FileUtils;
 import com.moko.bxp.a.c.utils.ToastUtils;
 import com.moko.lib.bxpui.dialog.AlertMessageDialog;
-import com.moko.lib.bxpui.dialog.LoadingMessageDialog;
 import com.moko.lib.bxpui.dialog.ModifyPasswordDialog;
 import com.moko.support.ac.AOAMokoSupport;
 import com.moko.support.ac.OrderTaskAssembler;
@@ -48,45 +47,29 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import androidx.annotation.IdRes;
-import androidx.annotation.NonNull;
-import androidx.fragment.app.FragmentManager;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-
 import no.nordicsemi.android.dfu.DfuProgressListener;
 import no.nordicsemi.android.dfu.DfuProgressListenerAdapter;
 import no.nordicsemi.android.dfu.DfuServiceInitiator;
 import no.nordicsemi.android.dfu.DfuServiceListenerHelper;
 
-public class DeviceInfoActivity extends BaseActivity implements RadioGroup.OnCheckedChangeListener {
+public class DeviceInfoActivity extends BaseActivity<ACActivityDeviceInfoBinding> implements RadioGroup.OnCheckedChangeListener {
     public static final int REQUEST_CODE_SELECT_FIRMWARE = 0x10;
-    private ACActivityDeviceInfoBinding mBind;
     private FragmentManager fragmentManager;
     private AdvertisementFragment alarmFragment;
     private SettingFragment settingFragment;
     private DeviceFragment deviceFragment;
     public String mDeviceMac;
     private boolean mIsClose;
-    private boolean mReceiverTag = false;
     private int mDisconnectType;
     public boolean isAdvParamsSuc;
     private boolean isModifyPassword;
     private int version;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        mBind = ACActivityDeviceInfoBinding.inflate(getLayoutInflater());
-        setContentView(mBind.getRoot());
+    protected void onCreate() {
         fragmentManager = getSupportFragmentManager();
         initFragment();
         mBind.rgOptions.setOnCheckedChangeListener(this);
-        EventBus.getDefault().register(this);
-        // 注册广播接收器
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED);
-        registerReceiver(mReceiver, filter);
-        mReceiverTag = true;
         if (!AOAMokoSupport.getInstance().isBluetoothOpen()) {
             // 蓝牙未打开，开启蓝牙
             AOAMokoSupport.getInstance().enableBluetooth();
@@ -101,6 +84,11 @@ public class DeviceInfoActivity extends BaseActivity implements RadioGroup.OnChe
         AOAMokoSupport.getInstance().sendOrder(orderTasks.toArray(new OrderTask[0]));
         boolean enablePwd = getIntent().getBooleanExtra("pwdEnable", false);
         settingFragment.setPwdShown(enablePwd);
+    }
+
+    @Override
+    protected ACActivityDeviceInfoBinding getViewBinding() {
+        return ACActivityDeviceInfoBinding.inflate(getLayoutInflater());
     }
 
     @Subscribe(threadMode = ThreadMode.POSTING, priority = 100)
@@ -340,27 +328,17 @@ public class DeviceInfoActivity extends BaseActivity implements RadioGroup.OnChe
         AOAMokoSupport.getInstance().sendOrder(orderTasks.toArray(new OrderTask[]{}));
     }
 
-    private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (intent != null) {
-                String action = intent.getAction();
-                if (BluetoothAdapter.ACTION_STATE_CHANGED.equals(action)) {
-                    int blueState = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, 0);
-                    if (blueState == BluetoothAdapter.STATE_TURNING_OFF) {
-                        dismissSyncProgressDialog();
-                        AlertMessageDialog dialog = new AlertMessageDialog();
-                        dialog.setTitle("Dismiss");
-                        dialog.setCancelGone();
-                        dialog.setMessage("The current system of bluetooth is not available!");
-                        dialog.setConfirm(R.string.ok);
-                        dialog.setOnAlertConfirmListener(() -> finish());
-                        dialog.show(getSupportFragmentManager());
-                    }
-                }
-            }
-        }
-    };
+    @Override
+    protected void onSystemBleTurnOff() {
+        dismissSyncProgressDialog();
+        AlertMessageDialog dialog = new AlertMessageDialog();
+        dialog.setTitle("Dismiss");
+        dialog.setCancelGone();
+        dialog.setMessage("The current system of bluetooth is not available!");
+        dialog.setConfirm(R.string.ok);
+        dialog.setOnAlertConfirmListener(this::finish);
+        dialog.show(getSupportFragmentManager());
+    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -373,7 +351,6 @@ public class DeviceInfoActivity extends BaseActivity implements RadioGroup.OnChe
                 if (TextUtils.isEmpty(firmwareFilePath)) return;
                 final File firmwareFile = new File(firmwareFilePath);
                 if (firmwareFile.exists()) {
-                    XLog.i("333333mac=" + mDeviceMac);
                     final DfuServiceInitiator starter = new DfuServiceInitiator(mDeviceMac)
                             .setKeepBond(false)
                             .setDisableNotification(true);
@@ -391,30 +368,6 @@ public class DeviceInfoActivity extends BaseActivity implements RadioGroup.OnChe
                 settingFragment.setPwdShown(enablePasswordVerify);
             }
         }
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (mReceiverTag) {
-            mReceiverTag = false;
-            // 注销广播
-            unregisterReceiver(mReceiver);
-        }
-        EventBus.getDefault().unregister(this);
-    }
-
-    private LoadingMessageDialog mLoadingMessageDialog;
-
-    public void showSyncingProgressDialog() {
-        mLoadingMessageDialog = new LoadingMessageDialog();
-        mLoadingMessageDialog.setMessage("Syncing..");
-        mLoadingMessageDialog.show(getSupportFragmentManager());
-    }
-
-    public void dismissSyncProgressDialog() {
-        if (mLoadingMessageDialog != null)
-            mLoadingMessageDialog.dismissAllowingStateLoss();
     }
 
     private void back() {

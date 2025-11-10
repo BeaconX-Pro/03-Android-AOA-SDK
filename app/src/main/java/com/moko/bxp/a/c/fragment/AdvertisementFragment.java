@@ -1,6 +1,5 @@
 package com.moko.bxp.a.c.fragment;
 
-import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,7 +7,7 @@ import android.view.ViewGroup;
 import android.widget.SeekBar;
 
 import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
 
 import com.moko.bxp.a.c.R;
@@ -19,8 +18,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Locale;
 
-public class AdvertisementFragment extends Fragment implements SeekBar.OnSeekBarChangeListener {
-    private ACFragmentAdvertisementBinding mBind;
+public class AdvertisementFragment extends BaseFragment<ACFragmentAdvertisementBinding> implements SeekBar.OnSeekBarChangeListener {
     private int mTxPower;
     private int mTriggerTxPower;
     private final String[] advChannelVal = {"2401", "2402", "2426", "2480", "2481"};
@@ -43,8 +41,7 @@ public class AdvertisementFragment extends Fragment implements SeekBar.OnSeekBar
     }
 
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        mBind = ACFragmentAdvertisementBinding.inflate(inflater, container, false);
+    protected void onCreateView() {
         activity = getActivity();
         mBind.sbTxPower.setOnSeekBarChangeListener(this);
         mBind.layoutTrigger.sbTriggerTxPower.setOnSeekBarChangeListener(this);
@@ -62,7 +59,11 @@ public class AdvertisementFragment extends Fragment implements SeekBar.OnSeekBar
         mBind.tvAdvInterval.setOnClickListener(v -> onAdvIntervalClick());
         mBind.layoutTrigger.tvTriggerType.setOnClickListener(v -> onTriggerTypeClick());
         mBind.layoutTrigger.tvTriggerAdvInterval.setOnClickListener(v -> onTriggerAdvIntervalClick());
-        return mBind.getRoot();
+    }
+
+    @Override
+    protected ACFragmentAdvertisementBinding getViewBind(@NonNull LayoutInflater inflater, @Nullable ViewGroup container) {
+        return ACFragmentAdvertisementBinding.inflate(inflater, container,false);
     }
 
     public boolean isTrigger() {

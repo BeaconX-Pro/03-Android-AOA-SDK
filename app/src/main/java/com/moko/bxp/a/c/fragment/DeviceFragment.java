@@ -1,17 +1,14 @@
 package com.moko.bxp.a.c.fragment;
 
-import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
+import androidx.annotation.Nullable;
 
 import com.moko.bxp.a.c.databinding.ACFragmentDeviceBinding;
 
-public class DeviceFragment extends Fragment {
-    private ACFragmentDeviceBinding mBind;
+public class DeviceFragment extends BaseFragment<ACFragmentDeviceBinding> {
 
     public DeviceFragment() {
     }
@@ -21,9 +18,8 @@ public class DeviceFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        mBind = ACFragmentDeviceBinding.inflate(inflater, container, false);
-        return mBind.getRoot();
+    protected ACFragmentDeviceBinding getViewBind(@NonNull LayoutInflater inflater, @Nullable ViewGroup container) {
+        return ACFragmentDeviceBinding.inflate(inflater, container, false);
     }
 
     public void setBattery(int battery) {

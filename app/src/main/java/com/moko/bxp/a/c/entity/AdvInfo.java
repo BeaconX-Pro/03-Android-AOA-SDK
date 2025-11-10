@@ -1,8 +1,6 @@
 package com.moko.bxp.a.c.entity;
 
-import java.io.Serializable;
-
-public class AdvInfo implements Serializable {
+public class AdvInfo {
     public String name;
     public int rssi;
     public String mac;

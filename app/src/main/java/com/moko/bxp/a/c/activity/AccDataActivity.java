@@ -1,11 +1,6 @@
 package com.moko.bxp.a.c.activity;
 
-import android.bluetooth.BluetoothAdapter;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.os.Bundle;
+import android.annotation.SuppressLint;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.animation.Animation;
@@ -14,12 +9,10 @@ import android.view.animation.AnimationUtils;
 import com.moko.ble.lib.MokoConstants;
 import com.moko.ble.lib.event.ConnectStatusEvent;
 import com.moko.ble.lib.event.OrderTaskResponseEvent;
-import com.moko.ble.lib.task.OrderTask;
 import com.moko.ble.lib.task.OrderTaskResponse;
 import com.moko.bxp.a.c.R;
 import com.moko.bxp.a.c.databinding.ACActivityAccDataBinding;
 import com.moko.bxp.a.c.utils.ToastUtils;
-import com.moko.lib.bxpui.dialog.LoadingMessageDialog;
 import com.moko.support.ac.AOAMokoSupport;
 import com.moko.support.ac.OrderTaskAssembler;
 import com.moko.support.ac.entity.OrderCHAR;
@@ -29,24 +22,11 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
-import java.util.ArrayList;
-
-public class AccDataActivity extends BaseActivity {
-    private ACActivityAccDataBinding mBind;
-    private boolean mReceiverTag = false;
+public class AccDataActivity extends BaseActivity<ACActivityAccDataBinding> {
     private boolean isSync;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        mBind = ACActivityAccDataBinding.inflate(getLayoutInflater());
-        setContentView(mBind.getRoot());
-        EventBus.getDefault().register(this);
-        // 注册广播接收器
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED);
-        registerReceiver(mReceiver, filter);
-        mReceiverTag = true;
+    protected void onCreate() {
         if (!AOAMokoSupport.getInstance().isBluetoothOpen()) {
             // 蓝牙未打开，开启蓝牙
             AOAMokoSupport.getInstance().enableBluetooth();
@@ -54,6 +34,11 @@ public class AccDataActivity extends BaseActivity {
             showSyncingProgressDialog();
             AOAMokoSupport.getInstance().sendOrder(OrderTaskAssembler.getAxisParams());
         }
+    }
+
+    @Override
+    protected ACActivityAccDataBinding getViewBinding() {
+        return ACActivityAccDataBinding.inflate(getLayoutInflater());
     }
 
     @Subscribe(threadMode = ThreadMode.POSTING, priority = 200)
@@ -67,13 +52,12 @@ public class AccDataActivity extends BaseActivity {
         });
     }
 
+    @SuppressLint("DefaultLocale")
     @Subscribe(threadMode = ThreadMode.POSTING, priority = 200)
     public void onOrderTaskResponseEvent(OrderTaskResponseEvent event) {
         EventBus.getDefault().cancelEventDelivery(event);
         final String action = event.getAction();
         runOnUiThread(() -> {
-            if (MokoConstants.ACTION_ORDER_TIMEOUT.equals(action)) {
-            }
             if (MokoConstants.ACTION_ORDER_FINISH.equals(action)) {
                 dismissSyncProgressDialog();
             }
@@ -129,47 +113,6 @@ public class AccDataActivity extends BaseActivity {
         });
     }
 
-
-    private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (intent != null) {
-                String action = intent.getAction();
-                if (BluetoothAdapter.ACTION_STATE_CHANGED.equals(action)) {
-                    int blueState = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, 0);
-                    if (blueState == BluetoothAdapter.STATE_TURNING_OFF) {
-                        dismissSyncProgressDialog();
-                        finish();
-                    }
-                }
-            }
-        }
-    };
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (mReceiverTag) {
-            mReceiverTag = false;
-            // 注销广播
-            unregisterReceiver(mReceiver);
-        }
-        EventBus.getDefault().unregister(this);
-    }
-
-    private LoadingMessageDialog mLoadingMessageDialog;
-
-    public void showSyncingProgressDialog() {
-        mLoadingMessageDialog = new LoadingMessageDialog();
-        mLoadingMessageDialog.setMessage("Syncing..");
-        mLoadingMessageDialog.show(getSupportFragmentManager());
-    }
-
-    public void dismissSyncProgressDialog() {
-        if (mLoadingMessageDialog != null)
-            mLoadingMessageDialog.dismissAllowingStateLoss();
-    }
-
     private void back() {
         // 关闭通知
         AOAMokoSupport.getInstance().disableAccNotify();
@@ -199,9 +142,7 @@ public class AccDataActivity extends BaseActivity {
         }
         // 保存
         showSyncingProgressDialog();
-        ArrayList<OrderTask> orderTasks = new ArrayList<>();
-        orderTasks.add(OrderTaskAssembler.setAxisParams(1, 0, threshold));
-        AOAMokoSupport.getInstance().sendOrder(orderTasks.toArray(new OrderTask[]{}));
+        AOAMokoSupport.getInstance().sendOrder(OrderTaskAssembler.setAxisParams(1, 0, threshold));
     }
 
     public void onSync(View view) {

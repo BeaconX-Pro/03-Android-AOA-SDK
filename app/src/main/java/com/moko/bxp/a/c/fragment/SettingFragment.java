@@ -1,17 +1,15 @@
 package com.moko.bxp.a.c.fragment;
 
-import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
+import androidx.annotation.Nullable;
 
 import com.moko.bxp.a.c.databinding.ACFragmentAoaSettingBinding;
 
-public class SettingFragment extends Fragment {
-    private ACFragmentAoaSettingBinding mBind;
+public class SettingFragment extends BaseFragment<ACFragmentAoaSettingBinding> {
     private boolean showPwd;
 
     public SettingFragment() {
@@ -22,10 +20,13 @@ public class SettingFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        mBind = ACFragmentAoaSettingBinding.inflate(inflater, container, false);
+    protected void onCreateView() {
         setPwdShown(showPwd);
-        return mBind.getRoot();
+    }
+
+    @Override
+    protected ACFragmentAoaSettingBinding getViewBind(@NonNull LayoutInflater inflater, @Nullable ViewGroup container) {
+        return ACFragmentAoaSettingBinding.inflate(inflater, container, false);
     }
 
     public void setAcc(int accEnable) {

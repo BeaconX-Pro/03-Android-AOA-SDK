@@ -1,7 +1,11 @@
 package com.moko.bxp.a.c.activity;
 
 import android.Manifest;
+import android.bluetooth.BluetoothAdapter;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Rect;
@@ -10,52 +14,106 @@ import android.os.SystemClock;
 import android.view.DisplayCutout;
 
 import com.elvishew.xlog.XLog;
+import com.moko.lib.bxpui.dialog.LoadingMessageDialog;
 
 import java.util.List;
 
+import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
+import androidx.viewbinding.ViewBinding;
 
+import org.greenrobot.eventbus.EventBus;
 
-public class BaseActivity extends FragmentActivity {
+public abstract class BaseActivity<VB extends ViewBinding> extends FragmentActivity {
+    // 记录上次页面控件点击时间,屏蔽无效点击事件
+    protected VB mBind;
+    protected long mLastOnClickTime = 0;
+    private LoadingMessageDialog mLoadingMessageDialog;
+    private boolean mReceiverTag;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (savedInstanceState != null) {
-            Intent intent = new Intent(this, GuideActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(intent);
-            return;
-        }
         getWindow().getDecorView().setOnApplyWindowInsetsListener((v, insets) -> {
             DisplayCutout cutout = insets.getDisplayCutout();
             if (cutout != null) {
                 List<Rect> rects = cutout.getBoundingRects();
-                if (rects.size() != 0) {
+                if (!rects.isEmpty()) {
                     getWindow().getDecorView().setPadding(cutout.getSafeInsetLeft(), cutout.getSafeInsetTop(),
                             cutout.getSafeInsetRight(), cutout.getSafeInsetBottom());
                 }
             }
             return insets;
         });
+        mBind = getViewBinding();
+        setContentView(mBind.getRoot());
+        if (registerEvent()){
+            EventBus.getDefault().register(this);
+            // 注册广播接收器
+            IntentFilter filter = new IntentFilter();
+            filter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED);
+            registerReceiver(mReceiver, filter);
+            mReceiverTag = true;
+        }
+        onCreate();
+    }
+
+    protected abstract VB getViewBinding();
+
+    protected void onCreate() {
+    }
+
+    protected boolean registerEvent(){
+        return true;
+    }
+
+    private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent != null) {
+                String action = intent.getAction();
+                if (BluetoothAdapter.ACTION_STATE_CHANGED.equals(action)) {
+                    int blueState = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, 0);
+                    if (blueState == BluetoothAdapter.STATE_TURNING_OFF) {
+                        onSystemBleTurnOff();
+                    }
+                }
+            }
+        }
+    };
+
+    protected void onSystemBleTurnOff(){
+        dismissSyncProgressDialog();
+        finish();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        if (mReceiverTag) {
+            mReceiverTag = false;
+            // 注销广播
+            unregisterReceiver(mReceiver);
+        }
+        if (EventBus.getDefault().isRegistered(this))
+            EventBus.getDefault().unregister(this);
     }
 
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-        XLog.i("onConfigurationChanged...");
-        finish();
+    public void showSyncingProgressDialog() {
+        if (null != mLoadingMessageDialog && mLoadingMessageDialog.isAdded() && !mLoadingMessageDialog.isDetached()) {
+            mLoadingMessageDialog.dismissAllowingStateLoss();
+        }
+        mLoadingMessageDialog = new LoadingMessageDialog();
+        mLoadingMessageDialog.setMessage("Syncing..");
+        if (!mLoadingMessageDialog.isAdded())
+            mLoadingMessageDialog.show(getSupportFragmentManager());
     }
 
-
-    // 记录上次页面控件点击时间,屏蔽无效点击事件
-    protected long mLastOnClickTime = 0;
+    public void dismissSyncProgressDialog() {
+        if (mLoadingMessageDialog != null && mLoadingMessageDialog.isAdded() && !mLoadingMessageDialog.isDetached())
+            mLoadingMessageDialog.dismissAllowingStateLoss();
+    }
 
     public boolean isWindowLocked() {
         long current = SystemClock.elapsedRealtime();

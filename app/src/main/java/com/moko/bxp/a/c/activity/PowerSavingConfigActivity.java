@@ -1,7 +1,6 @@
 package com.moko.bxp.a.c.activity;
 
 import android.annotation.SuppressLint;
-import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -20,7 +19,6 @@ import com.moko.bxp.a.c.databinding.ACActivityPowerSavingConfigBinding;
 import com.moko.bxp.a.c.entity.TxPowerEnum;
 import com.moko.bxp.a.c.utils.ToastUtils;
 import com.moko.lib.bxpui.dialog.BottomDialog;
-import com.moko.lib.bxpui.dialog.LoadingMessageDialog;
 import com.moko.support.ac.AOAMokoSupport;
 import com.moko.support.ac.OrderTaskAssembler;
 import com.moko.support.ac.entity.OrderCHAR;
@@ -35,8 +33,7 @@ import java.util.Arrays;
 import java.util.Locale;
 import java.util.Objects;
 
-public class PowerSavingConfigActivity extends BaseActivity implements CompoundButton.OnCheckedChangeListener, SeekBar.OnSeekBarChangeListener {
-    private ACActivityPowerSavingConfigBinding mBind;
+public class PowerSavingConfigActivity extends BaseActivity<ACActivityPowerSavingConfigBinding> implements CompoundButton.OnCheckedChangeListener, SeekBar.OnSeekBarChangeListener {
     private int version;
     private final String[] mValues = {"10", "20", "50", "100", "200", "250", "500", "1000", "2000", "5000", "10000", "20000", "50000", "100000"};
     private int mSelected;
@@ -45,11 +42,7 @@ public class PowerSavingConfigActivity extends BaseActivity implements CompoundB
 
     @SuppressLint("StringFormatInvalid")
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        mBind = ACActivityPowerSavingConfigBinding.inflate(getLayoutInflater());
-        setContentView(mBind.getRoot());
-        EventBus.getDefault().register(this);
+    protected void onCreate() {
         version = getIntent().getIntExtra("version", 0);
         mBind.etStaticTriggerTime.addTextChangedListener(new TextWatcher() {
             @Override
@@ -89,6 +82,11 @@ public class PowerSavingConfigActivity extends BaseActivity implements CompoundB
             AOAMokoSupport.getInstance().sendOrder(orderTasks.toArray(new OrderTask[]{}));
         }
         mBind.cbPowerSaveMode.setOnCheckedChangeListener(this);
+    }
+
+    @Override
+    protected ACActivityPowerSavingConfigBinding getViewBinding() {
+        return ACActivityPowerSavingConfigBinding.inflate(getLayoutInflater());
     }
 
     private void onAdvIntervalClick() {
@@ -188,25 +186,6 @@ public class PowerSavingConfigActivity extends BaseActivity implements CompoundB
                 }
             }
         });
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        EventBus.getDefault().unregister(this);
-    }
-
-    private LoadingMessageDialog mLoadingMessageDialog;
-
-    public void showSyncingProgressDialog() {
-        mLoadingMessageDialog = new LoadingMessageDialog();
-        mLoadingMessageDialog.setMessage("Syncing..");
-        mLoadingMessageDialog.show(getSupportFragmentManager());
-    }
-
-    public void dismissSyncProgressDialog() {
-        if (mLoadingMessageDialog != null)
-            mLoadingMessageDialog.dismissAllowingStateLoss();
     }
 
     public void onSave(View view) {

@@ -1,12 +1,7 @@
 package com.moko.bxp.a.c.activity;
 
-import android.bluetooth.BluetoothAdapter;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Build;
-import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
@@ -43,7 +38,6 @@ import com.moko.support.ac.entity.DeviceInfo;
 import com.moko.support.ac.entity.OrderCHAR;
 import com.moko.support.ac.entity.ParamsKeyEnum;
 
-import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
@@ -54,17 +48,11 @@ import java.util.Iterator;
 import java.util.Locale;
 import java.util.concurrent.ConcurrentHashMap;
 
-import androidx.core.content.ContextCompat;
-import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.LinearLayoutManager;
-
-public class AOACMainActivity extends BaseActivity implements MokoScanDeviceCallback, BaseQuickAdapter.OnItemChildClickListener {
-    private ACActivityMainBinding mBind;
-    private boolean mReceiverTag = false;
-    private ConcurrentHashMap<String, AdvInfo> advInfoHashMap;
-    private ArrayList<AdvInfo> advInfoList;
-    private DeviceListAdapter adapter;
-    private MokoBleScanner mokoBleScanner;
+public class AOACMainActivity extends BaseActivity<ACActivityMainBinding> implements MokoScanDeviceCallback, BaseQuickAdapter.OnItemChildClickListener {
+    private final ConcurrentHashMap<String, AdvInfo> advInfoHashMap = new ConcurrentHashMap<>();
+    private final ArrayList<AdvInfo> advInfoList = new ArrayList<>();
+    private final DeviceListAdapter adapter = new DeviceListAdapter();
+    private final MokoBleScanner mokoBleScanner = new MokoBleScanner();
     private Handler mHandler;
     private boolean isPasswordError;
     private AdvInfoAnalysisImpl advInfoAnalysisImpl;
@@ -72,10 +60,7 @@ public class AOACMainActivity extends BaseActivity implements MokoScanDeviceCall
     private boolean enablePwd;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        mBind = ACActivityMainBinding.inflate(getLayoutInflater());
-        setContentView(mBind.getRoot());
+    protected void onCreate() {
         // 初始化Xlog
         if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
             // 优先保存到SD卡中
@@ -89,27 +74,11 @@ public class AOACMainActivity extends BaseActivity implements MokoScanDeviceCall
             PATH_LOGCAT = getFilesDir().getAbsolutePath() + File.separator + (BuildConfig.IS_LIBRARY ? "mokoBeaconXPro" : "BXP_A_C");
         }
         AOAMokoSupport.getInstance().init(getApplicationContext());
-        advInfoHashMap = new ConcurrentHashMap<>();
-        advInfoList = new ArrayList<>();
-        adapter = new DeviceListAdapter();
-        adapter.replaceData(advInfoList);
         adapter.setOnItemChildClickListener(this);
         adapter.openLoadAnimation();
-        mBind.rvDevices.setLayoutManager(new LinearLayoutManager(this));
-        DividerItemDecoration itemDecoration = new DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
-        itemDecoration.setDrawable(ContextCompat.getDrawable(this, R.drawable.shape_recycleview_divider));
-        mBind.rvDevices.addItemDecoration(itemDecoration);
         mBind.rvDevices.setAdapter(adapter);
-
         mHandler = new Handler(Looper.getMainLooper());
-        mokoBleScanner = new MokoBleScanner(this);
-        EventBus.getDefault().register(this);
         mSavedPassword = SPUtiles.getStringValue(this, AppConstants.SP_KEY_SAVED_PASSWORD, "");
-        // 注册广播接收器
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED);
-        registerReceiver(mReceiver, filter);
-        mReceiverTag = true;
         if (!AOAMokoSupport.getInstance().isBluetoothOpen()) {
             // 蓝牙未打开，开启蓝牙
             AOAMokoSupport.getInstance().enableBluetooth();
@@ -118,30 +87,15 @@ public class AOACMainActivity extends BaseActivity implements MokoScanDeviceCall
         }
     }
 
-    private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (intent != null) {
-                String action = intent.getAction();
-                if (BluetoothAdapter.ACTION_STATE_CHANGED.equals(action)) {
-                    int blueState = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, 0);
-                    switch (blueState) {
-                        case BluetoothAdapter.STATE_TURNING_OFF:
-                            if (animation != null) {
-                                mHandler.removeMessages(0);
-                                mokoBleScanner.stopScanDevice();
-                                onStopScan();
-                            }
-                            break;
-                        case BluetoothAdapter.STATE_ON:
-                            if (animation == null) startScan();
-                            break;
+    @Override
+    protected ACActivityMainBinding getViewBinding() {
+        return ACActivityMainBinding.inflate(getLayoutInflater());
+    }
 
-                    }
-                }
-            }
-        }
-    };
+    @Override
+    protected void onSystemBleTurnOff() {
+        if (animation == null) startScan();
+    }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onConnectStatusEvent(ConnectStatusEvent event) {
@@ -150,7 +104,7 @@ public class AOACMainActivity extends BaseActivity implements MokoScanDeviceCall
             mPassword = "";
             // 设备断开，通知页面更新
             dismissLoadingProgressDialog();
-            dismissLoadingMessageDialog();
+            dismissVerifyMessageDialog();
             if (animation == null) {
                 if (isPasswordError) {
                     isPasswordError = false;
@@ -163,8 +117,7 @@ public class AOACMainActivity extends BaseActivity implements MokoScanDeviceCall
                 }
                 if (null == animation) startScan();
             }
-        }
-        if (MokoConstants.ACTION_DISCOVER_SUCCESS.equals(action)) {
+        } else if (MokoConstants.ACTION_DISCOVER_SUCCESS.equals(action)) {
             // 设备连接成功，通知页面更新
             AOAMokoSupport.getInstance().sendOrder(OrderTaskAssembler.getVerifyPasswordEnable());
         }
@@ -194,7 +147,7 @@ public class AOACMainActivity extends BaseActivity implements MokoScanDeviceCall
                     if (configKeyEnum == ParamsKeyEnum.KEY_PASSWORD) {
                         if (flag == 1 && length == 1) {
                             int result = value[4] & 0xFF;
-                            dismissLoadingMessageDialog();
+                            dismissVerifyMessageDialog();
                             if (result == 0xAA) {
                                 mSavedPassword = mPassword;
                                 SPUtiles.setStringValue(this, AppConstants.SP_KEY_SAVED_PASSWORD, mSavedPassword);
@@ -236,7 +189,6 @@ public class AOACMainActivity extends BaseActivity implements MokoScanDeviceCall
                     disconnectType = value[4] & 0xff;
                     if (disconnectType == 1) {
                         //密码验证超时
-                        XLog.i("333333*******************type=" + disconnectType);
                         if (null != dialog && dialog.isAdded() && dialog.isVisible())
                             dialog.dismiss();
                         ToastUtils.showToast(this, "Password entry timed out！");
@@ -257,29 +209,18 @@ public class AOACMainActivity extends BaseActivity implements MokoScanDeviceCall
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (mReceiverTag) {
-            mReceiverTag = false;
-            // 注销广播
-            unregisterReceiver(mReceiver);
-        }
-        EventBus.getDefault().unregister(this);
-    }
-
-    @Override
     public void onStartScan() {
         advInfoHashMap.clear();
         new Thread(() -> {
             while (animation != null) {
                 runOnUiThread(() -> {
                     adapter.replaceData(advInfoList);
-                    mBind.tvDeviceNum.setText(String.format("DEVICE(%d)", advInfoList.size()));
+                    mBind.tvDeviceNum.setText(String.format(Locale.getDefault(), "DEVICE(%d)", advInfoList.size()));
                 });
                 try {
                     Thread.sleep(500);
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    XLog.e(e);
                 }
                 updateDevices();
             }
@@ -363,13 +304,13 @@ public class AOACMainActivity extends BaseActivity implements MokoScanDeviceCall
 
     private LoadingMessageDialog mLoadingMessageDialog;
 
-    private void showLoadingMessageDialog() {
+    private void showVerifyMessageDialog() {
         mLoadingMessageDialog = new LoadingMessageDialog();
         mLoadingMessageDialog.setMessage("Verifying..");
         mLoadingMessageDialog.show(getSupportFragmentManager());
     }
 
-    private void dismissLoadingMessageDialog() {
+    private void dismissVerifyMessageDialog() {
         if (mLoadingMessageDialog != null)
             mLoadingMessageDialog.dismissAllowingStateLoss();
     }
@@ -419,7 +360,7 @@ public class AOACMainActivity extends BaseActivity implements MokoScanDeviceCall
                 }
                 XLog.i(password);
                 mPassword = password;
-                showLoadingMessageDialog();
+                showVerifyMessageDialog();
                 mBind.ivRefresh.postDelayed(() -> AOAMokoSupport.getInstance().sendOrder(OrderTaskAssembler.setPassword(password)), 200);
             }
 

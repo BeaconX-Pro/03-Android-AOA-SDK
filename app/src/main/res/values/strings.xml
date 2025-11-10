@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">BXP_A-C</string>
+    <string name="app_name">BXP-AG045</string>
 
     <string name="setting_title">SETTING</string>
     <string name="device_title">DEVICE</string>
@@ -8,6 +8,6 @@
     <!--    <string name="t_h_tips_3"><![CDATA[*The device stores T&H data when the temperature or humidity changes arbitrarily.]]></string>-->
     <!--    <string name="trigger_tapped_tips_3">*The Beacon will always stop advertising after press button %s times.</string>-->
     <string name="static_trigger_time_tips">*After device keep static for %ss, it will stop advertising and disable alarm mode to enter into power saving mode until device moves.</string>
-    <string name="static_trigger_time_tips_new">*After device keep static for xxs, it will enter into power saving mode. In power-saving mode, the device supports entering deep sleep mode without broadcasting or performing slow broadcasting. When the device is moved again, it will return to the normal broadcasting mode and broadcast according to the parameters configured on the "ADVERTISEMENT" page.</string>
+    <string name="static_trigger_time_tips_new">*After device keep static for %ss, it will enter into power saving mode. In power-saving mode, the device supports entering deep sleep mode without broadcasting or performing slow broadcasting. When the device is moved again, it will return to the normal broadcasting mode and broadcast according to the parameters configured on the "ADVERTISEMENT" page.</string>
 
 </resources>

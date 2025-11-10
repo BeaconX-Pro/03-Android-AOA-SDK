@@ -1,11 +1,6 @@
 package com.moko.bxp.a.c.activity;
 
-import android.bluetooth.BluetoothAdapter;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.os.Bundle;
 import android.view.View;
 
 import com.moko.ble.lib.MokoConstants;
@@ -18,7 +13,6 @@ import com.moko.bxp.a.c.R;
 import com.moko.bxp.a.c.databinding.ACActivityQuickSwitchBinding;
 import com.moko.bxp.a.c.utils.ToastUtils;
 import com.moko.lib.bxpui.dialog.AlertMessageDialog;
-import com.moko.lib.bxpui.dialog.LoadingMessageDialog;
 import com.moko.support.ac.AOAMokoSupport;
 import com.moko.support.ac.OrderTaskAssembler;
 import com.moko.support.ac.entity.OrderCHAR;
@@ -31,32 +25,22 @@ import org.greenrobot.eventbus.ThreadMode;
 import java.util.ArrayList;
 import java.util.List;
 
-public class QuickSwitchActivity extends BaseActivity {
-    private ACActivityQuickSwitchBinding mBind;
+public class QuickSwitchActivity extends BaseActivity<ACActivityQuickSwitchBinding> {
     private boolean enablePasswordVerify;
     private boolean enableLedIndicator;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        mBind = ACActivityQuickSwitchBinding.inflate(getLayoutInflater());
-        setContentView(mBind.getRoot());
-        EventBus.getDefault().register(this);
+    protected void onCreate() {
+        showSyncingProgressDialog();
+        ArrayList<OrderTask> orderTasks = new ArrayList<>(2);
+        orderTasks.add(OrderTaskAssembler.getTriggerLedStatus());
+        orderTasks.add(OrderTaskAssembler.getVerifyPasswordEnable());
+        AOAMokoSupport.getInstance().sendOrder(orderTasks.toArray(new OrderTask[]{}));
+    }
 
-        // 注册广播接收器
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED);
-        registerReceiver(mReceiver, filter);
-        if (!AOAMokoSupport.getInstance().isBluetoothOpen()) {
-            // 蓝牙未打开，开启蓝牙
-            AOAMokoSupport.getInstance().enableBluetooth();
-        } else {
-            showSyncingProgressDialog();
-            ArrayList<OrderTask> orderTasks = new ArrayList<>();
-            orderTasks.add(OrderTaskAssembler.getTriggerLedStatus());
-            orderTasks.add(OrderTaskAssembler.getVerifyPasswordEnable());
-            AOAMokoSupport.getInstance().sendOrder(orderTasks.toArray(new OrderTask[]{}));
-        }
+    @Override
+    protected ACActivityQuickSwitchBinding getViewBinding() {
+        return ACActivityQuickSwitchBinding.inflate(getLayoutInflater());
     }
 
     @Subscribe(threadMode = ThreadMode.POSTING, priority = 200)
@@ -75,8 +59,6 @@ public class QuickSwitchActivity extends BaseActivity {
         EventBus.getDefault().cancelEventDelivery(event);
         final String action = event.getAction();
         runOnUiThread(() -> {
-            if (MokoConstants.ACTION_ORDER_TIMEOUT.equals(action)) {
-            }
             if (MokoConstants.ACTION_ORDER_FINISH.equals(action)) {
                 dismissSyncProgressDialog();
             }
@@ -187,48 +169,10 @@ public class QuickSwitchActivity extends BaseActivity {
 
     public void setVerifyPasswordEnable(boolean enable) {
         showSyncingProgressDialog();
-        ArrayList<OrderTask> orderTasks = new ArrayList<>();
+        ArrayList<OrderTask> orderTasks = new ArrayList<>(2);
         orderTasks.add(OrderTaskAssembler.setVerifyPasswordEnable(enable ? 1 : 0));
         orderTasks.add(OrderTaskAssembler.getVerifyPasswordEnable());
         AOAMokoSupport.getInstance().sendOrder(orderTasks.toArray(new OrderTask[]{}));
-    }
-
-    private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (intent != null) {
-                String action = intent.getAction();
-                if (BluetoothAdapter.ACTION_STATE_CHANGED.equals(action)) {
-                    int blueState = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, 0);
-                    if (blueState == BluetoothAdapter.STATE_TURNING_OFF) {
-                        dismissSyncProgressDialog();
-                        finish();
-                    }
-                }
-            }
-        }
-    };
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        // 注销广播
-        unregisterReceiver(mReceiver);
-        EventBus.getDefault().unregister(this);
-    }
-
-    private LoadingMessageDialog mLoadingMessageDialog;
-
-    public void showSyncingProgressDialog() {
-        mLoadingMessageDialog = new LoadingMessageDialog();
-        mLoadingMessageDialog.setMessage("Syncing..");
-        mLoadingMessageDialog.show(getSupportFragmentManager());
-    }
-
-    public void dismissSyncProgressDialog() {
-        if (mLoadingMessageDialog != null)
-            mLoadingMessageDialog.dismissAllowingStateLoss();
     }
 
     public void onBack(View view) {

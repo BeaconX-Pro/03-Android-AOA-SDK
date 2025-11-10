@@ -8,6 +8,8 @@
     android:paddingBottom="15dp"
     android:paddingStart="10dp"
     android:paddingEnd="10dp"
+    tools:viewBindingIgnore="true"
+    android:layout_marginBottom="10dp"
     android:paddingTop="15dp">
 
     <RelativeLayout
