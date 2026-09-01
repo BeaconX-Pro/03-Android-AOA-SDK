@@ -6,6 +6,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -154,6 +155,7 @@ public class AOACMainActivity extends BaseActivity<ACActivityMainBinding> implem
                                 XLog.i("Success");
                                 Intent intent = new Intent(this, DeviceInfoActivity.class);
                                 intent.putExtra("pwdEnable", enablePwd);
+                                intent.putExtra("deviceType", deviceType);
                                 startActivity(intent);
                             } else {
                                 isPasswordError = true;
@@ -173,6 +175,7 @@ public class AOACMainActivity extends BaseActivity<ACActivityMainBinding> implem
                                 enablePwd = false;
                                 Intent intent = new Intent(this, DeviceInfoActivity.class);
                                 intent.putExtra("pwdEnable", enablePwd);
+                                intent.putExtra("deviceType", deviceType);
                                 startActivity(intent);
                             }
                         }
@@ -323,6 +326,7 @@ public class AOACMainActivity extends BaseActivity<ACActivityMainBinding> implem
     private String mPassword;
     private String mSavedPassword;
     private String mSelectedDeviceMac;
+    private int deviceType;
 
     @Override
     public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
@@ -340,6 +344,7 @@ public class AOACMainActivity extends BaseActivity<ACActivityMainBinding> implem
                 mokoBleScanner.stopScanDevice();
             }
             mSelectedDeviceMac = advInfo.mac;
+            deviceType = advInfo.advType;
             showLoadingProgressDialog();
             mBind.ivRefresh.postDelayed(() -> AOAMokoSupport.getInstance().connDevice(mSelectedDeviceMac), 500);
         }

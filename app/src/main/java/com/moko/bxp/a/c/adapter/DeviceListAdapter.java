@@ -56,5 +56,11 @@ public class DeviceListAdapter extends BaseQuickAdapter<AdvInfo, BaseViewHolder>
             tvTemp.setText(item.temperature != -1 ? (item.temperature + "℃") : "N/A");
             parent.addView(view);
         }
+        if (item.advType == 3) {
+            View view = LayoutInflater.from(mContext).inflate(R.layout.a_qh_layout_device_info, null);
+            TextView tvAdvChannel = view.findViewById(R.id.tvDevType);
+            tvAdvChannel.setText(TextUtils.isEmpty(item.deviceType) ? "N/A" : "0x" + item.deviceType);
+            parent.addView(view);
+        }
     }
 }

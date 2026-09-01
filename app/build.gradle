@@ -6,19 +6,16 @@ if (!isLibrary.toBoolean()) {
 
 android {
     namespace "com.moko.bxp.a.c"
-    compileSdk 35
+    compileSdk 36
 
     defaultConfig {
-        if (!isLibrary.toBoolean()) {
-            applicationId "com.moko.bxp.a.c"
-        }
         minSdk 28
-        targetSdk 35
-        versionCode 100
-        versionName "1.0.0"
+        targetSdk 36
+        versionCode 101
+        versionName "1.0.1"
 
         def formatDate = new Date().format("yyyyMMddHHmm")
-        setProperty("archivesBaseName", "BXP_A_C_${versionName}_${formatDate}")
+        setProperty("archivesBaseName", "BXP_A_${versionName}_${formatDate}")
     }
     android.buildFeatures.buildConfig = true
 

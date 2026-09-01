@@ -2,11 +2,11 @@ apply plugin: 'com.android.library'
 
 android {
     namespace "com.moko.support.ac"
-    compileSdk 35
+    compileSdk 36
 
     defaultConfig {
         minSdk 28
-        targetSdk 35
+        targetSdk 36
         versionCode 3
         versionName "3.0"
     }
@@ -38,7 +38,7 @@ tasks.register('makeJar', Copy) {
     //如果之前存在，则先删除
     delete 'build/libs/mokoSupport.jar'
     //设置拷贝的文件
-    from('build/intermediates/aar_main_jar/debug/')
+    from('build/intermediates/aar_main_jar/debug/syncDebugLibJars/')
     //生成jar包后的文件目录位置
     into('build/libs/')
     //include,exclude参数来设置过滤

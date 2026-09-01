@@ -26,6 +26,7 @@ import com.moko.bxp.a.c.AppConstants;
 import com.moko.bxp.a.c.R;
 import com.moko.bxp.a.c.databinding.ACActivityDeviceInfoBinding;
 import com.moko.bxp.a.c.fragment.AdvertisementFragment;
+import com.moko.bxp.a.c.fragment.AdvertisementQHFragment;
 import com.moko.bxp.a.c.fragment.DeviceFragment;
 import com.moko.bxp.a.c.fragment.SettingFragment;
 import com.moko.bxp.a.c.service.DfuServiceAoA;
@@ -55,7 +56,8 @@ import no.nordicsemi.android.dfu.DfuServiceListenerHelper;
 public class DeviceInfoActivity extends BaseActivity<ACActivityDeviceInfoBinding> implements RadioGroup.OnCheckedChangeListener {
     public static final int REQUEST_CODE_SELECT_FIRMWARE = 0x10;
     private FragmentManager fragmentManager;
-    private AdvertisementFragment alarmFragment;
+    private AdvertisementFragment advFragment;
+    private AdvertisementQHFragment advQHFragment;
     private SettingFragment settingFragment;
     private DeviceFragment deviceFragment;
     public String mDeviceMac;
@@ -64,10 +66,12 @@ public class DeviceInfoActivity extends BaseActivity<ACActivityDeviceInfoBinding
     public boolean isAdvParamsSuc;
     private boolean isModifyPassword;
     private int version;
-
+    private int deviceType;
+    private int btnAvEnable;
     @Override
     protected void onCreate() {
         fragmentManager = getSupportFragmentManager();
+        deviceType = getIntent().getIntExtra("deviceType", -1);
         initFragment();
         mBind.rgOptions.setOnCheckedChangeListener(this);
         if (!AOAMokoSupport.getInstance().isBluetoothOpen()) {
@@ -77,13 +81,20 @@ public class DeviceInfoActivity extends BaseActivity<ACActivityDeviceInfoBinding
         showSyncingProgressDialog();
         List<OrderTask> orderTasks = new ArrayList<>(5);
         orderTasks.add(OrderTaskAssembler.getFirmwareVersion());
-        orderTasks.add(OrderTaskAssembler.getNormalAdvParams());
-        orderTasks.add(OrderTaskAssembler.getButtonTriggerParams());
+        if (deviceType == 3) {
+            orderTasks.add(OrderTaskAssembler.getNormalAdvQHParams(0));
+            orderTasks.add(OrderTaskAssembler.getNormalAdvQHParams(1));
+            orderTasks.add(OrderTaskAssembler.getBtnAdvEnable());
+        } else {
+            orderTasks.add(OrderTaskAssembler.getNormalAdvParams());
+            orderTasks.add(OrderTaskAssembler.getButtonTriggerParams());
+        }
         orderTasks.add(OrderTaskAssembler.getSensorType());
         orderTasks.add(OrderTaskAssembler.getDeviceMac());
         AOAMokoSupport.getInstance().sendOrder(orderTasks.toArray(new OrderTask[0]));
         boolean enablePwd = getIntent().getBooleanExtra("pwdEnable", false);
         settingFragment.setPwdShown(enablePwd);
+        settingFragment.setTurnOffShown(deviceType == 3);
     }
 
     @Override
@@ -214,9 +225,11 @@ public class DeviceInfoActivity extends BaseActivity<ACActivityDeviceInfoBinding
                                 int result = value[4] & 0xFF;
                                 switch (configKeyEnum) {
                                     case KEY_NORMAL_ADV_PARAMS:
+                                    case KEY_NORMAL_ADV_PARAMS_QH:
                                         isAdvParamsSuc = result == 0xAA;
                                         break;
                                     case KEY_BUTTON_TRIGGER_PARAMS:
+                                    case KEY_BTN_ADV_ENABLE:
                                         if (isAdvParamsSuc && result == 0xAA) {
                                             ToastUtils.showToast(this, "Success");
                                         } else {
@@ -231,14 +244,14 @@ public class DeviceInfoActivity extends BaseActivity<ACActivityDeviceInfoBinding
                                     case KEY_NORMAL_ADV_PARAMS:
                                         if (length == 8) {
                                             int interval = MokoUtils.toInt(Arrays.copyOfRange(value, 4, 6));
-                                            alarmFragment.setAdvInterval(interval);
-                                            alarmFragment.updateAdvTxPower(value[6]);
+                                            advFragment.setAdvInterval(interval);
+                                            advFragment.updateAdvTxPower(value[6]);
                                             int advDuration = MokoUtils.toInt(Arrays.copyOfRange(value, 7, 9));
-                                            alarmFragment.setAdvDuration(advDuration);
+                                            advFragment.setAdvDuration(advDuration);
                                             int standbyTime = MokoUtils.toInt(Arrays.copyOfRange(value, 9, 11));
-                                            alarmFragment.setStandByDuration(standbyTime);
+                                            advFragment.setStandByDuration(standbyTime);
                                             int channel = value[11] & 0xff;
-                                            alarmFragment.setAdvChannel(channel);
+                                            advFragment.setAdvChannel(channel);
                                         }
                                         break;
                                     case KEY_BUTTON_TRIGGER_PARAMS:
@@ -247,7 +260,7 @@ public class DeviceInfoActivity extends BaseActivity<ACActivityDeviceInfoBinding
                                             int txPower = value[6];
                                             int advDuration = MokoUtils.toInt(Arrays.copyOfRange(value, 7, 9));
                                             int triggerType = value[9];
-                                            alarmFragment.setTriggerData(advInterval, txPower, advDuration, triggerType);
+                                            advFragment.setTriggerData(advInterval, txPower, advDuration, triggerType);
                                         }
                                         break;
 
@@ -264,7 +277,11 @@ public class DeviceInfoActivity extends BaseActivity<ACActivityDeviceInfoBinding
                                             deviceFragment.setMacAddress(mDeviceMac);
                                         }
                                         break;
-
+                                    case KEY_BTN_ADV_ENABLE:
+                                        if (length == 1) {
+                                            btnAvEnable = value[4];
+                                        }
+                                        break;
                                     case KEY_SENSOR_TYPE:
                                         if (length == 5) {
                                             int accEnable = value[4] & 0xff;
@@ -276,6 +293,15 @@ public class DeviceInfoActivity extends BaseActivity<ACActivityDeviceInfoBinding
                                         if (length == 2) {
                                             int battery = MokoUtils.toInt(Arrays.copyOfRange(value, 4, value.length));
                                             deviceFragment.setBattery(battery);
+                                        }
+                                        break;
+
+                                    case KEY_NORMAL_ADV_PARAMS_QH:
+                                        if (length == 5) {
+                                            int solt = value[4];
+                                            int interval = MokoUtils.toInt(Arrays.copyOfRange(value, 5, 7));
+                                            advQHFragment.setAdvInterval(solt, interval);
+                                            advQHFragment.updateAdvTxPower(solt, value[7]);
                                         }
                                         break;
                                 }
@@ -381,27 +407,39 @@ public class DeviceInfoActivity extends BaseActivity<ACActivityDeviceInfoBinding
     }
 
     private void initFragment() {
-        alarmFragment = AdvertisementFragment.newInstance();
+        advFragment = AdvertisementFragment.newInstance();
+        advQHFragment = AdvertisementQHFragment.newInstance();
         settingFragment = SettingFragment.newInstance();
         deviceFragment = DeviceFragment.newInstance();
         fragmentManager.beginTransaction()
-                .add(R.id.frame_container, alarmFragment)
+                .add(R.id.frame_container, deviceType == 3 ? advQHFragment : advFragment)
                 .add(R.id.frame_container, settingFragment)
                 .add(R.id.frame_container, deviceFragment)
-                .show(alarmFragment)
+                .show(deviceType == 3 ? advQHFragment : advFragment)
                 .hide(settingFragment)
                 .hide(deviceFragment)
                 .commit();
     }
 
     private void showSlotFragment() {
-        if (alarmFragment != null) {
-            mBind.ivSave.setVisibility(View.VISIBLE);
-            fragmentManager.beginTransaction()
-                    .hide(settingFragment)
-                    .hide(deviceFragment)
-                    .show(alarmFragment)
-                    .commit();
+        if (deviceType == 3) {
+            if (advQHFragment != null) {
+                mBind.ivSave.setVisibility(View.VISIBLE);
+                fragmentManager.beginTransaction()
+                        .hide(settingFragment)
+                        .hide(deviceFragment)
+                        .show(advQHFragment)
+                        .commit();
+            }
+        } else {
+            if (advFragment != null) {
+                mBind.ivSave.setVisibility(View.VISIBLE);
+                fragmentManager.beginTransaction()
+                        .hide(settingFragment)
+                        .hide(deviceFragment)
+                        .show(advFragment)
+                        .commit();
+            }
         }
         mBind.tvTitle.setText("ADVERTISEMENT");
     }
@@ -410,7 +448,7 @@ public class DeviceInfoActivity extends BaseActivity<ACActivityDeviceInfoBinding
         if (settingFragment != null) {
             mBind.ivSave.setVisibility(View.GONE);
             fragmentManager.beginTransaction()
-                    .hide(alarmFragment)
+                    .hide(deviceType == 3 ? advQHFragment : advFragment)
                     .hide(deviceFragment)
                     .show(settingFragment)
                     .commit();
@@ -422,7 +460,7 @@ public class DeviceInfoActivity extends BaseActivity<ACActivityDeviceInfoBinding
         if (deviceFragment != null) {
             mBind.ivSave.setVisibility(View.GONE);
             fragmentManager.beginTransaction()
-                    .hide(alarmFragment)
+                    .hide(deviceType == 3 ? advQHFragment : advFragment)
                     .hide(settingFragment)
                     .show(deviceFragment)
                     .commit();
@@ -446,8 +484,13 @@ public class DeviceInfoActivity extends BaseActivity<ACActivityDeviceInfoBinding
     private void getAdvertiseMent() {
         showSyncingProgressDialog();
         List<OrderTask> orderTasks = new ArrayList<>(4);
-        orderTasks.add(OrderTaskAssembler.getNormalAdvParams());
-        orderTasks.add(OrderTaskAssembler.getButtonTriggerParams());
+        if (deviceType == 3) {
+            orderTasks.add(OrderTaskAssembler.getNormalAdvQHParams(0));
+            orderTasks.add(OrderTaskAssembler.getNormalAdvQHParams(1));
+        } else {
+            orderTasks.add(OrderTaskAssembler.getNormalAdvParams());
+            orderTasks.add(OrderTaskAssembler.getButtonTriggerParams());
+        }
         orderTasks.add(OrderTaskAssembler.getDeviceMac());
         AOAMokoSupport.getInstance().sendOrder(orderTasks.toArray(new OrderTask[0]));
     }
@@ -461,6 +504,11 @@ public class DeviceInfoActivity extends BaseActivity<ACActivityDeviceInfoBinding
     public void resetDevice() {
         showSyncingProgressDialog();
         AOAMokoSupport.getInstance().sendOrder(OrderTaskAssembler.resetDevice());
+    }
+
+    public void closeDevice() {
+        showSyncingProgressDialog();
+        AOAMokoSupport.getInstance().sendOrder(OrderTaskAssembler.closeDevice());
     }
 
     public void chooseFirmwareFile() {
@@ -480,17 +528,30 @@ public class DeviceInfoActivity extends BaseActivity<ACActivityDeviceInfoBinding
 
     public void onSave(View view) {
         if (isWindowLocked()) return;
-        if (alarmFragment.isValid()) {
-            showSyncingProgressDialog();
-            List<OrderTask> orderTasks = new ArrayList<>(4);
-            orderTasks.add(OrderTaskAssembler.setNormalAdvParams(alarmFragment.getSelectedAdvInterval(), alarmFragment.getTxPower(), alarmFragment.getAdvDuration(),
-                    alarmFragment.getStandbyTime(), alarmFragment.getSelectedAdvChannel()));
-            int type = alarmFragment.isTrigger() ? alarmFragment.getSelectTriggerType() : 0;
-            orderTasks.add(OrderTaskAssembler.setButtonTriggerParams(alarmFragment.getSelectedTriggerAdvInterval(), alarmFragment.getTriggerTxPower(),
-                    alarmFragment.getTriggerAdvDuration(), type));
-            AOAMokoSupport.getInstance().sendOrder(orderTasks.toArray(new OrderTask[]{}));
+        if (deviceType == 3) {
+            if (advQHFragment.isValid()) {
+                showSyncingProgressDialog();
+                List<OrderTask> orderTasks = new ArrayList<>(4);
+                orderTasks.add(OrderTaskAssembler.setNormalAdvQHParams(0, advQHFragment.getSelectedAdvInterval(), advQHFragment.getTxPower(), 0));
+                orderTasks.add(OrderTaskAssembler.setNormalAdvQHParams(1, advQHFragment.getSelectedAdvInterval2(), advQHFragment.getTxPower2(), 1));
+                orderTasks.add(OrderTaskAssembler.setBtnAdvEnable(btnAvEnable));
+                AOAMokoSupport.getInstance().sendOrder(orderTasks.toArray(new OrderTask[]{}));
+            } else {
+                ToastUtils.showToast(this, "Para error!");
+            }
         } else {
-            ToastUtils.showToast(this, "Para error!");
+            if (advFragment.isValid()) {
+                showSyncingProgressDialog();
+                List<OrderTask> orderTasks = new ArrayList<>(4);
+                orderTasks.add(OrderTaskAssembler.setNormalAdvParams(advFragment.getSelectedAdvInterval(), advFragment.getTxPower(), advFragment.getAdvDuration(),
+                        advFragment.getStandbyTime(), advFragment.getSelectedAdvChannel()));
+                int type = advFragment.isTrigger() ? advFragment.getSelectTriggerType() : 0;
+                orderTasks.add(OrderTaskAssembler.setButtonTriggerParams(advFragment.getSelectedTriggerAdvInterval(), advFragment.getTriggerTxPower(),
+                        advFragment.getTriggerAdvDuration(), type));
+                AOAMokoSupport.getInstance().sendOrder(orderTasks.toArray(new OrderTask[]{}));
+            } else {
+                ToastUtils.showToast(this, "Para error!");
+            }
         }
     }
 
@@ -514,7 +575,17 @@ public class DeviceInfoActivity extends BaseActivity<ACActivityDeviceInfoBinding
 
     public void onQuickSwitch(View view) {
         if (isWindowLocked()) return;
-        startActivityForResult(new Intent(this, QuickSwitchActivity.class), AppConstants.REQUEST_CODE_QUICK_SWITCH);
+        startActivityForResult(new Intent(this, deviceType == 3 ? QuickSwitchQHActivity.class : QuickSwitchActivity.class), AppConstants.REQUEST_CODE_QUICK_SWITCH);
+    }
+
+    public void onTurnOff(View view) {
+        if (isWindowLocked()) return;
+        AlertMessageDialog resetDeviceDialog = new AlertMessageDialog();
+        resetDeviceDialog.setTitle("Warning！");
+        resetDeviceDialog.setMessage("Are you sure to turn off the Beacon?\nPlease make sure the Beacon has a button to turn on!");
+        resetDeviceDialog.setConfirm(R.string.ok);
+        resetDeviceDialog.setOnAlertConfirmListener(this::closeDevice);
+        resetDeviceDialog.show(getSupportFragmentManager());
     }
 
     public void onResetBeacon(View view) {

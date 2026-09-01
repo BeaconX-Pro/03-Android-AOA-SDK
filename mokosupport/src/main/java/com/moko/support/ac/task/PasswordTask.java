@@ -19,7 +19,7 @@ public class PasswordTask extends OrderTask {
         return data;
     }
 
-    public void setData(ParamsKeyEnum key) {
+    public void getData(ParamsKeyEnum key) {
         createGetParamsData(key.getParamsKey());
     }
 

@@ -23,6 +23,7 @@
         android:id="@+id/lineAcc"
         style="@style/divider_line" />
 
+
     <TextView
         android:layout_width="match_parent"
         android:layout_height="50dp"
@@ -36,6 +37,28 @@
 
     <View style="@style/divider_line" />
 
+    <LinearLayout
+        android:id="@+id/llTurnOff"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:onClick="onTurnOff"
+        android:orientation="vertical"
+        android:visibility="gone"
+        tools:visibility="visible">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:drawableRight="@drawable/ic_arrow_right"
+            android:gravity="center_vertical"
+            android:text="Turn off Beacon"
+            android:textColor="@color/black_333333"
+            android:textSize="15sp" />
+
+        <View style="@style/divider_line" />
+    </LinearLayout>
+
     <TextView
         android:layout_width="match_parent"
         android:layout_height="50dp"
@@ -47,6 +70,7 @@
         android:textSize="15sp" />
 
     <View style="@style/divider_line" />
+
 
     <TextView
         android:id="@+id/tvModifyPwd"

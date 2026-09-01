@@ -21,4 +21,5 @@ public class AdvInfo {
     public String alarmStatus;
     public int advType;
     public int batterPercent;
+    public String deviceType;
 }

@@ -90,6 +90,12 @@ public class OrderTaskAssembler {
         return task;
     }
 
+    public static OrderTask closeDevice() {
+        ParamsTask task = new ParamsTask();
+        task.setData(ParamsKeyEnum.KEY_CLOSE);
+        return task;
+    }
+
     public static OrderTask getPowerSavingStaticTriggerTime() {
         ParamsTask task = new ParamsTask();
         task.getData(ParamsKeyEnum.KEY_POWER_SAVING_STATIC_TRIGGER_TIME);
@@ -108,7 +114,7 @@ public class OrderTaskAssembler {
         return task;
     }
 
-    public static OrderTask getPowerSavingAdvParams(){
+    public static OrderTask getPowerSavingAdvParams() {
         ParamsTask task = new ParamsTask();
         task.getData(ParamsKeyEnum.KEY_POWER_SAVING_ADV_PARAMS);
         return task;
@@ -122,7 +128,31 @@ public class OrderTaskAssembler {
 
     public static OrderTask getVerifyPasswordEnable() {
         PasswordTask task = new PasswordTask();
-        task.setData(ParamsKeyEnum.KEY_VERIFY_PASSWORD_ENABLE);
+        task.getData(ParamsKeyEnum.KEY_VERIFY_PASSWORD_ENABLE);
+        return task;
+    }
+
+    public static OrderTask getCloseByBtnEnable() {
+        ParamsTask task = new ParamsTask();
+        task.getData(ParamsKeyEnum.KEY_CLOSE_BY_BTN_ENABLE);
+        return task;
+    }
+
+    public static OrderTask getResetByBtnEnable() {
+        ParamsTask task = new ParamsTask();
+        task.getData(ParamsKeyEnum.KEY_RESET_BY_BTN_ENABLE);
+        return task;
+    }
+
+    public static OrderTask getBtnAdvEnable() {
+        ParamsTask task = new ParamsTask();
+        task.getData(ParamsKeyEnum.KEY_BTN_ADV_ENABLE);
+        return task;
+    }
+
+    public static OrderTask getNormalAdvQHParams(int slot) {
+        ParamsTask task = new ParamsTask();
+        task.getNormalAdvQHParams(slot);
         return task;
     }
 
@@ -156,6 +186,24 @@ public class OrderTaskAssembler {
         return task;
     }
 
+    public static OrderTask setCloseByBtnEnable(@IntRange(from = 0, to = 1) int enable) {
+        ParamsTask task = new ParamsTask();
+        task.setCloseByBtnEnable(enable);
+        return task;
+    }
+
+    public static OrderTask setResetByBtnEnable(@IntRange(from = 0, to = 1) int enable) {
+        ParamsTask task = new ParamsTask();
+        task.setResetByBtnEnable(enable);
+        return task;
+    }
+
+    public static OrderTask setBtnAdvEnable(@IntRange(from = 0, to = 1) int enable) {
+        ParamsTask task = new ParamsTask();
+        task.setBtnAdvEnable(enable);
+        return task;
+    }
+
     public static OrderTask setPassword(String password) {
         PasswordTask task = new PasswordTask();
         task.setPassword(password);
@@ -165,6 +213,12 @@ public class OrderTaskAssembler {
     public static OrderTask setNormalAdvParams(int advInterval, int txPower, int advDuration, int standByDuration, int advChannel) {
         ParamsTask task = new ParamsTask();
         task.setNormalAdvParams(advInterval, txPower, advDuration, standByDuration, advChannel);
+        return task;
+    }
+
+    public static OrderTask setNormalAdvQHParams(int slot, int advInterval, int txPower, int advChannel) {
+        ParamsTask task = new ParamsTask();
+        task.setNormalAdvQHParams(slot, advInterval, txPower, advChannel);
         return task;
     }
 

@@ -104,6 +104,8 @@ public class AdvInfoAnalysisImpl implements DeviceInfoAnalysis<AdvInfo> {
         String alarmStatus = null;
         int advType = -1;
         int key = -1;
+        String deviceType = "";
+        //BXP-A-C
         //产测信息帧
         byte[] serviceData = record.getServiceData(new ParcelUuid(OrderServices.SERVICE_ADV_PRODUCT_TEST.getUuid()));
         if (null != serviceData && serviceData.length == 13) {
@@ -114,6 +116,7 @@ public class AdvInfoAnalysisImpl implements DeviceInfoAnalysis<AdvInfo> {
             advType = 1;
             key = 0x01;
         }
+
         //设备信息帧
         byte[] bytes = record.getManufacturerSpecificData(0x000D);
         if (null != bytes && bytes.length == 27) {
@@ -143,7 +146,15 @@ public class AdvInfoAnalysisImpl implements DeviceInfoAnalysis<AdvInfo> {
                 alarmCount = Integer.parseInt(countHigh + countLow, 16);
             }
         }
-        if (advType == -1 || (key != 0x10 && key != 0x1C && key != 0x18 && key != 0x01))
+        //BXP-A-QH
+        //设备信息帧
+        bytes = record.getManufacturerSpecificData(0x00C7);
+        if (null != bytes && bytes.length == 24) {
+            advType = 3;
+            key = 0x02;
+            deviceType = MokoUtils.byte2HexString(bytes[1]);
+        }
+        if (advType == -1 || (key != 0x10 && key != 0x1C && key != 0x18 && key != 0x01 && key != 0x02))
             return null;
         AdvInfo advInfo;
         if (beaconXInfoHashMap.containsKey(deviceInfo.mac)) {
@@ -172,6 +183,7 @@ public class AdvInfoAnalysisImpl implements DeviceInfoAnalysis<AdvInfo> {
             advInfo.intervalTime = currentTime - advInfo.scanTime;
             advInfo.scanTime = currentTime;
             advInfo.advType = advType;
+            advInfo.deviceType = deviceType;
         } else {
             advInfo = new AdvInfo();
             advInfo.name = deviceInfo.name;
@@ -191,6 +203,7 @@ public class AdvInfoAnalysisImpl implements DeviceInfoAnalysis<AdvInfo> {
             advInfo.alarmStatus = alarmStatus;
             advInfo.scanRecord = deviceInfo.scanRecord;
             advInfo.advType = advType;
+            advInfo.deviceType = deviceType;
             advInfo.batterPercent = batterPercent;
             advInfo.scanTime = SystemClock.elapsedRealtime();
             beaconXInfoHashMap.put(deviceInfo.mac, advInfo);

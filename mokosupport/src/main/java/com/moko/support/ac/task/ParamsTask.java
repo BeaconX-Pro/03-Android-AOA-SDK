@@ -105,6 +105,32 @@ public class ParamsTask extends OrderTask {
         response.responseValue = data;
     }
 
+    public void getNormalAdvQHParams(@IntRange(from = 0, to = 1) int slot) {
+        data = new byte[]{
+                (byte) 0xEA,
+                (byte) 0x00,
+                (byte) ParamsKeyEnum.KEY_NORMAL_ADV_PARAMS_QH.getParamsKey(),
+                (byte) 0x01,
+                (byte) slot
+        };
+        response.responseValue = data;
+    }
+
+    public void setNormalAdvQHParams(int slot, int advInterval, int txPower, int advChannel) {
+        byte[] advIntervalBytes = MokoUtils.toByteArray(advInterval, 2);
+        data = new byte[4 + 5];
+        data[0] = (byte) 0xEA;
+        data[1] = 0x01;
+        data[2] = (byte) ParamsKeyEnum.KEY_NORMAL_ADV_PARAMS_QH.getParamsKey();
+        data[3] = 5;
+        data[4] = (byte) slot;
+        data[5] = advIntervalBytes[0];
+        data[6] = advIntervalBytes[1];
+        data[7] = (byte) txPower;
+        data[8] = (byte) advChannel;
+        response.responseValue = data;
+    }
+
     public void setButtonTriggerParams(int advInterval, int txPower, int advDuration, int triggerType) {
         byte[] advIntervalBytes = MokoUtils.toByteArray(advInterval, 2);
         byte[] advDurationBytes = MokoUtils.toByteArray(advDuration, 2);
@@ -130,5 +156,37 @@ public class ParamsTask extends OrderTask {
                 (byte) 0x01,
                 (byte) enable
         };
+    }
+    public void setCloseByBtnEnable(@IntRange(from = 0, to = 1) int enable) {
+        data = new byte[]{
+                (byte) 0xEA,
+                (byte) 0x01,
+                (byte) ParamsKeyEnum.KEY_CLOSE_BY_BTN_ENABLE.getParamsKey(),
+                (byte) 0x01,
+                (byte) enable
+        };
+        response.responseValue = data;
+    }
+
+    public void setResetByBtnEnable(@IntRange(from = 0, to = 1) int enable) {
+        data = new byte[]{
+                (byte) 0xEA,
+                (byte) 0x01,
+                (byte) ParamsKeyEnum.KEY_RESET_BY_BTN_ENABLE.getParamsKey(),
+                (byte) 0x01,
+                (byte) enable
+        };
+        response.responseValue = data;
+    }
+
+    public void setBtnAdvEnable(@IntRange(from = 0, to = 1) int enable) {
+        data = new byte[]{
+                (byte) 0xEA,
+                (byte) 0x01,
+                (byte) ParamsKeyEnum.KEY_BTN_ADV_ENABLE.getParamsKey(),
+                (byte) 0x01,
+                (byte) enable
+        };
+        response.responseValue = data;
     }
 }
