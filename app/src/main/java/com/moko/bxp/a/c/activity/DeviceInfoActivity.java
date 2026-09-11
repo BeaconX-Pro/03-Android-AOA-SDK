@@ -95,6 +95,7 @@ public class DeviceInfoActivity extends BaseActivity<ACActivityDeviceInfoBinding
         boolean enablePwd = getIntent().getBooleanExtra("pwdEnable", false);
         settingFragment.setPwdShown(enablePwd);
         settingFragment.setTurnOffShown(deviceType == 3);
+        settingFragment.setResetShown(enablePwd);
     }
 
     @Override
@@ -392,6 +393,7 @@ public class DeviceInfoActivity extends BaseActivity<ACActivityDeviceInfoBinding
             if (resultCode == RESULT_OK) {
                 boolean enablePasswordVerify = data.getBooleanExtra(AppConstants.EXTRA_KEY_PASSWORD_VERIFICATION, false);
                 settingFragment.setPwdShown(enablePasswordVerify);
+                settingFragment.setResetShown(enablePasswordVerify);
             }
         }
     }

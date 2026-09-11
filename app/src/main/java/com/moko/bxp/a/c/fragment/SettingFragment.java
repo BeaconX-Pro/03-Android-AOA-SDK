@@ -12,6 +12,7 @@ import com.moko.bxp.a.c.databinding.ACFragmentAoaSettingBinding;
 public class SettingFragment extends BaseFragment<ACFragmentAoaSettingBinding> {
     private boolean showPwd;
     private boolean showTurnoff;
+    private boolean showReset;
 
     public SettingFragment() {
     }
@@ -24,6 +25,7 @@ public class SettingFragment extends BaseFragment<ACFragmentAoaSettingBinding> {
     protected void onCreateView() {
         setPwdShown(showPwd);
         setTurnOffShown(showTurnoff);
+        setResetShown(showReset);
     }
 
     @Override
@@ -51,5 +53,10 @@ public class SettingFragment extends BaseFragment<ACFragmentAoaSettingBinding> {
         this.showTurnoff = showTurnoff;
         if (null == mBind) return;
         mBind.llTurnOff.setVisibility(showTurnoff ? View.VISIBLE : View.GONE);
+    }
+    public void setResetShown(boolean showReset) {
+        this.showReset = showReset;
+        if (null == mBind) return;
+        mBind.llReset.setVisibility(this.showReset ? View.VISIBLE : View.GONE);
     }
 }

@@ -59,18 +59,28 @@
         <View style="@style/divider_line" />
     </LinearLayout>
 
-    <TextView
+    <LinearLayout
+        android:id="@+id/llReset"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:drawableRight="@drawable/ic_arrow_right"
-        android:gravity="center_vertical"
+        android:layout_height="wrap_content"
+        android:clickable="true"
         android:onClick="onResetBeacon"
-        android:text="Reset Beacon"
-        android:textColor="@color/black_333333"
-        android:textSize="15sp" />
+        android:orientation="vertical"
+        android:visibility="gone"
+        tools:visibility="visible">
 
-    <View style="@style/divider_line" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:drawableRight="@drawable/ic_arrow_right"
+            android:gravity="center_vertical"
+            android:text="Reset Beacon"
+            android:textColor="@color/black_333333"
+            android:textSize="15sp" />
 
+        <View style="@style/divider_line" />
+
+    </LinearLayout>
 
     <TextView
         android:id="@+id/tvModifyPwd"
