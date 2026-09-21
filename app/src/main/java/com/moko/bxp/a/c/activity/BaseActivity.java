@@ -23,6 +23,7 @@ import com.moko.lib.bxpui.dialog.LoadingMessageDialog;
 
 import java.util.List;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -41,6 +42,14 @@ public abstract class BaseActivity<VB extends ViewBinding> extends FragmentActiv
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // targetSdk 35+ / Android 16：预测性返回不会再走 Activity.onBackPressed()，
+        // 在此统一接管系统返回，并继续回调子类已有的 onBackPressed() 实现。
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                BaseActivity.this.onBackPressed();
+            }
+        });
         // 设置全屏
         getWindow().getDecorView().setSystemUiVisibility(
                 View.SYSTEM_UI_FLAG_LAYOUT_STABLE
@@ -102,7 +111,7 @@ public abstract class BaseActivity<VB extends ViewBinding> extends FragmentActiv
         });
         mBind = getViewBinding();
         setContentView(mBind.getRoot());
-        if (registerEvent()){
+        if (registerEvent()) {
             EventBus.getDefault().register(this);
             // 注册广播接收器
             IntentFilter filter = new IntentFilter();
@@ -113,12 +122,22 @@ public abstract class BaseActivity<VB extends ViewBinding> extends FragmentActiv
         onCreate();
     }
 
+
+    /**
+     * 覆盖 ComponentActivity 默认实现（会再次进 OnBackPressedDispatcher，可能死循环）。
+     * 未重写的页面默认 finish；已重写 onBackPressed 的子类仍走各自逻辑。
+     */
+    @Override
+    public void onBackPressed() {
+        finish();
+    }
+
     protected abstract VB getViewBinding();
 
     protected void onCreate() {
     }
 
-    protected boolean registerEvent(){
+    protected boolean registerEvent() {
         return true;
     }
 
@@ -137,7 +156,7 @@ public abstract class BaseActivity<VB extends ViewBinding> extends FragmentActiv
         }
     };
 
-    protected void onSystemBleTurnOff(){
+    protected void onSystemBleTurnOff() {
         dismissSyncProgressDialog();
         finish();
     }
